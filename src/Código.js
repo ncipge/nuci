@@ -14,28 +14,6 @@
  */
 
 /**
- * Função especial que é executada automaticamente quando a planilha é aberta.
- * Ela cria um menu personalizado para o script e para o web app.
- */
-function onOpen() {
-  var ui = SpreadsheetApp.getUi(); // Obtém a interface do usuário da planilha ativa
-  ui.createMenu('Manipulação de Dados') // Cria um novo menu chamado 'Manipulação de Dados'
-      .addItem('Abrir Formulário Web', 'abrirFormularioWeb') // Adiciona item para abrir o web app
-      .addToUi(); // Adiciona o menu à interface do usuário da planilha
-}
-
-/**
- * Função para abrir o web app.
- * Utiliza HtmlService para exibir o index.html como um diálogo na planilha.
- */
-function abrirFormularioWeb() {
-  var htmlOutput = HtmlService.createHtmlOutputFromFile('index')
-      .setWidth(1000) // Aumenta a largura para acomodar mais campos
-      .setHeight(800); // Aumenta a altura para acomodar mais campos
-  SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'Gerenciador de Dados da Planilha'); // Mostra o diálogo
-}
-
-/**
  * Função especial que é executada quando o script é acessado como um web app.
  * Ela verifica as permissões do usuário antes de servir o index.html.
  * @return {HtmlOutput} O objeto HtmlOutput contendo o conteúdo do web app ou uma mensagem de acesso negado.
@@ -49,15 +27,14 @@ function doGet() {
   // Verifica se o e-mail do usuário está na lista de autorizados
   if (authorizedUsers.has(userEmail)) {
     Logger.log('Acesso concedido para: ' + userEmail);
-    // Serve o index.html e passa o e-mail do usuário como um objeto de dados
     var template = HtmlService.createTemplateFromFile('index');
-    template.userEmail = userEmail; // Passa o e-mail do usuário para o template
+    template.userEmail = userEmail;
     return template.evaluate()
-        .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL); // Permite que o web app seja incorporado em um iframe
+        .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   } else {
     Logger.log('Acesso negado para: ' + userEmail);
-    // Retorna uma página HTML simples com a mensagem de acesso negado
-    return HtmlService.createHtmlOutput('<h1 style="color: #ef4444; text-align: center; font-family: \'Inter\', sans-serif; margin-top: 50px;">Acesso Negado</h1><p style="text-align: center; font-family: \'Inter\', sans-serif;">Seu e-mail: <strong>' + userEmail + '</strong> não está autorizado a acessar esta aplicação. Por favor, contate o administrador da planilha.</p>')
+    // Exibe o e-mail bloqueado na mensagem
+    return HtmlService.createHtmlOutput('<h1 style="color: #ef4444; text-align: center; font-family: \'Inter\', sans-serif; margin-top: 50px;">Acesso Negado</h1><p style="text-align: center; font-family: \'Inter\', sans-serif; font-size: 1.2rem;"><strong>Seu e-mail</strong> <span style="color: #991b1b;">' + userEmail + '</span> não está autorizado a acessar esta aplicação.<br>Por favor, contate o administrador da planilha.</p>')
         .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
 }
@@ -263,7 +240,7 @@ function lerTodosOsDadosWeb(pageNumber, pageSize, filters) {
     var numColunasEsperadas = 13;
     if (ultimaColuna < numColunasEsperadas) {
         Logger.log('Atenção: A planilha tem menos colunas do que o esperado. Lendo até a última coluna disponível.');
-        ultimaColuna = numColunasEsperadas; // Garante que o range lido tenha o número correto de colunas
+        ultimaColuna = numColunasEsperados; // Garante que o range lido tenha o número correto de colunas
     }
 
     if (ultimaLinha < 2 || ultimaColuna === 0) { // Se só tem cabeçalho ou está vazia ou não há colunas
