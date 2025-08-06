@@ -28,27 +28,13 @@ Este projeto foi clonado do Google Apps Script utilizando o `clasp`.
    clasp pull
    ```
 
-## Estrutura da Planilha Google
+## Estrutura das Abas da Planilha Google
 
-A planilha utilizada por este projeto deve conter os seguintes campos, nesta ordem:
+Abaixo estão as estruturas esperadas para cada aba utilizada pelo projeto:
 
-1. **Sistema**
-2. **Núm.PAE/SAJ**
-3. **Interessado**
-4. **Entrada**
-5. **Situação**
-6. **Assimetria**
-7. **Observação**
-8. **UG Origem**
-9. **Assunto**
-10. **Sub Assunto**
-11. **ACI Responsável**
-12. **Destino**
-13. **Saída**
-
-- **Cabeçalho:** A primeira linha da planilha deve conter exatamente esses nomes de campos.
-- **Aba principal:** Recomenda-se nomear como "Dados" ou conforme a lógica do script.
-- **Permissões:** O script precisa de permissão de edição na planilha.
+- **DadosTeste** [Sistema; Núm.PAE/SAJ; Interessado; Entrada; Situação; Assimetria; Observação; UG Origem; Assunto; Sub Assunto; ACI Responsável; Destino; Saída]
+- **Config Usuarios** [E-mail; Usuário]
+- **Config Assuntos** [Assunto; Sub Assunto]
 
 > Mantenha a ordem e os nomes dos campos conforme acima para garantir o funcionamento correto do script.
 

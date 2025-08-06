@@ -3,211 +3,236 @@
   <head>
     <base target="_top">
     <title>Gerenciador de Dados da Planilha</title>
-    <!-- Inclui Tailwind CSS para estilização fácil e responsiva -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       /* Estilos personalizados para a fonte e o corpo */
       body {
         font-family: 'Inter', sans-serif;
-        background-color: #f0f4f8; /* Cor de fundo suave */
-        color: #334155; /* Cor de texto padrão */
+        background-color: #f8fafc; /* Cor de fundo mais clara */
+        color: #374151; /* Cor de texto padrão */
       }
-      .container {
-        max-width: 90%; /* Largura máxima para responsividade */
-        margin: 2rem auto; /* Centraliza o container */
+      .container-main {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
         padding: 1.5rem;
-        background-color: #ffffff; /* Fundo branco para o conteúdo */
-        border-radius: 0.75rem; /* Cantos arredondados */
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra suave */
+      }
+      @media (min-width: 1024px) {
+        .container-main {
+          flex-direction: row;
+        }
+      }
+
+      /* MELHORIAS VISUAIS PARA FILTROS E TABELA */
+      .card {
+        background-color: #ffffff;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        border: 1px solid #e2e8f0;
+      }
+      
+      .filtro-card {
+        padding: 1rem;
+        margin-bottom: 0.5rem;
       }
       .form-group label {
-        display: block;
-        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
         font-weight: 600;
-        color: #1e293b;
+        color: #4b5563;
+        margin-bottom: 0.25rem;
       }
       .form-group input,
-      .form-group textarea,
-      .form-group select { /* Adicionado estilo para select */
-        width: 100%;
-        padding: 0.75rem;
-        border: 1px solid #cbd5e1;
-        border-radius: 0.5rem;
+      .form-group select {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        color: #374151;
         font-size: 1rem;
-        transition: border-color 0.2s;
+        border-radius: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        margin-bottom: 0.25rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
       }
       .form-group input:focus,
-      .form-group textarea:focus,
-      .form-group select:focus { /* Adicionado estilo de foco para select */
-        outline: none;
-        border-color: #3b82f6; /* Cor do foco */
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); /* Sombra do foco */
+      .form-group select:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 2px #bfdbfe;
       }
       .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         padding: 0.75rem 1.5rem;
+        font-weight: 600;
         border-radius: 0.5rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition: background-color 0.2s, transform 0.1s;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease-in-out;
       }
       .btn-primary {
-        background-color: #3b82f6; /* Azul primário */
-        color: #ffffff;
+        background-color: #2563eb;
+        color: #fff;
+        border: none;
       }
       .btn-primary:hover {
-        background-color: #2563eb; /* Azul mais escuro no hover */
-        transform: translateY(-1px); /* Pequeno efeito de elevação */
+        background-color: #1d4ed8;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       }
       .btn-secondary {
-        background-color: #64748b; /* Cinza secundário */
-        color: #ffffff;
+        background: #e5e7eb;
+        color: #4b5563;
+        border: 1px solid #d1d5db;
       }
       .btn-secondary:hover {
-        background-color: #475569; /* Cinza mais escuro no hover */
+        background: #d1d5db;
+        color: #374151;
         transform: translateY(-1px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
       }
-      .btn-disabled {
-        background-color: #e2e8f0; /* Cinza claro para desabilitado */
-        color: #94a3b8; /* Cor de texto claro */
-        cursor: not-allowed;
+      .btn-danger {
+        background-color: #ef4444;
+        color: #fff;
+        border: none;
+      }
+      .btn-danger:hover {
+        background-color: #dc2626;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      /* TABELA */
+      .table-container {
+        overflow-x: auto;
+        border-radius: 0.75rem;
+        border: 1px solid #e2e8f0;
+      }
+      .tabela-dados {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .tabela-dados thead th {
+        position: sticky;
+        top: 0;
+        background: #f1f5f9;
+        color: #64748b;
+        z-index: 2;
+        font-size: 0.875rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        border-bottom: 2px solid #e2e8f0;
+      }
+      .tabela-dados tbody tr {
+        transition: background-color 0.2s;
+      }
+      .tabela-dados tbody tr:nth-child(even) {
+        background: #f8fafc;
+      }
+      .tabela-dados tbody tr:hover {
+        background: #eef2ff;
+      }
+      .tabela-dados td {
+        font-size: 0.95rem;
+        color: #4b5563;
+        border-bottom: 1px solid #f3f4f6;
+      }
+      .tabela-dados th, .tabela-dados td {
+        padding: 0.75rem 1rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .tabela-dados th.sortable {
+        cursor: pointer;
+        position: relative;
+      }
+      .tabela-dados th.sorted-asc::after {
+        content: ' ▲';
+        font-size: 0.8em;
+      }
+      .tabela-dados th.sorted-desc::after {
+        content: ' ▼';
+        font-size: 0.8em;
       }
       .message-box {
-        margin-top: 1rem;
-        padding: 1rem;
+        padding: 0.75rem;
         border-radius: 0.5rem;
         font-weight: 500;
       }
       .message-box.success {
-        background-color: #d1fae5; /* Verde claro */
-        color: #065f46; /* Verde escuro */
+        background-color: #d1fae5;
+        color: #065f46;
       }
       .message-box.error {
-        background-color: #fee2e2; /* Vermelho claro */
-        color: #991b1b; /* Vermelho escuro */
-      }
-      .message-box.info {
-        background-color: #e0f2fe; /* Azul claro */
-        color: #0c4a6e; /* Azul escuro */
-      }
-      /* Estilo para a tabela */
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 1.5rem;
-      }
-      th, td {
-        padding: 0.75rem;
-        text-align: left;
-        border-bottom: 1px solid #e2e8f0; /* Borda inferior sutil */
-        white-space: nowrap; /* Evita quebra de linha em células */
-        overflow: hidden;
-        text-overflow: ellipsis; /* Adiciona elipses se o conteúdo for muito longo */
-      }
-      th {
-        background-color: #e2e8f0; /* Fundo para cabeçalhos */
-        font-weight: 700;
-        color: #1e293b;
-        text-transform: uppercase;
-        font-size: 0.875rem;
-      }
-      tr:hover {
-        background-color: #f8fafc; /* Fundo leve no hover da linha */
+        background-color: #fee2e2;
+        color: #991b1b;
       }
       .loading-spinner {
-        border: 4px solid rgba(0, 0, 0, 0.1);
-        border-left-color: #3b82f6;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #3b82f6;
         border-radius: 50%;
-        width: 24px;
-        height: 24px;
+        width: 1.25rem;
+        height: 1.25rem;
         animation: spin 1s linear infinite;
-        display: inline-block;
-        vertical-align: middle;
         margin-left: 0.5rem;
+        display: inline-block;
       }
       @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
       }
-      .pagination-controls {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-top: 1.5rem;
-        gap: 1rem;
-      }
-      .pagination-controls button {
-        @apply btn btn-secondary; /* Aplica estilos de botão secundário */
-      }
-      .pagination-controls button:disabled {
-        @apply btn-disabled; /* Aplica estilo de desabilitado */
-      }
-
-      /* Estilos para o Modal (Popup) */
+      
+      /* Estilos para o Modal */
       .modal-overlay {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.5); /* Fundo semi-transparente */
+        background-color: rgba(0, 0, 0, 0.5);
         display: flex;
         justify-content: center;
         align-items: center;
-        z-index: 50; /* Garante que fique por cima de tudo */
+        z-index: 50;
       }
       .modal-content {
-        background-color: #ffffff;
-        padding: 1.5rem;
+        background-color: #fff;
         border-radius: 0.75rem;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-        max-width: 800px; /* Largura máxima do modal */
-        width: 90%; /* Largura responsiva */
-        max-height: 90vh; /* Altura máxima para rolagem interna */
-        overflow-y: auto; /* Rolagem se o conteúdo for grande */
+        padding: 2rem;
+        max-width: 900px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
         position: relative;
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
       }
       .modal-close-btn {
         position: absolute;
         top: 1rem;
         right: 1rem;
-        background: none;
-        border: none;
-        font-size: 1.5rem;
+        font-size: 2rem;
+        color: #9ca3af;
         cursor: pointer;
-        color: #64748b;
       }
-      .modal-close-btn:hover {
-        color: #1e293b;
-      }
-
-      /* Estilos para ordenação de tabela */
-      th.sortable { cursor: pointer; }
-      th.sorted-asc::after { content: ' \25B2'; }
-      th.sorted-desc::after { content: ' \25BC'; }
     </style>
   </head>
-  <body class="bg-gray-100 p-4 sm:p-6 md:p-8">
-    <div class="container">
-      <!-- Exibição do e-mail do usuário logado -->
-      <div class="text-right text-gray-600 text-sm mb-4">
-        Usuário logado: <span id="userEmailDisplay" class="font-semibold text-gray-800">Carregando...</span>
-      </div>
+  <body class="bg-gray-50 p-4 sm:p-6 md:p-8">
+    
+    <div class="text-right text-gray-600 text-sm mb-4">
+      Usuário logado: <span id="userEmailDisplay" class="font-semibold text-gray-800">Carregando...</span>
+    </div>
 
-      <h1 class="text-3xl font-extrabold text-center mb-6 text-gray-900">Gerenciador de Dados da Planilha</h1>
+    <h1 class="text-3xl font-extrabold text-center mb-6 text-gray-900">Gerenciador de Dados da Planilha</h1>
 
-      <!-- Botão para abrir o Formulário de Inserção -->
-      <div class="text-center mb-8">
-        <button id="openAddRecordModalBtn" class="btn btn-primary text-xl px-8 py-3">
-          + Adicionar Novo Registro
-        </button>
-      </div>
+    <div class="text-center mb-8">
+      <button id="openAddRecordModalBtn" class="btn btn-primary text-xl px-8 py-3">
+        + Adicionar Novo Registro
+      </button>
+    </div>
 
-      <!-- Seção de Filtros -->
-      <div class="mb-8 p-6 bg-yellow-50 rounded-lg shadow-sm">
-        <h2 class="text-xl font-bold mb-4 text-yellow-800">Filtrar Dados</h2>
+    <div class="container-main">
+      <div class="w-full lg:w-1/4 card h-fit sticky top-4">
+        <h2 class="text-xl font-bold mb-4 text-gray-800">Filtrar Dados</h2>
         <form id="filterForm" class="space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 gap-4">
             <div class="form-group">
               <label for="filterSistema">Sistema:</label>
               <select id="filterSistema" name="sistema" class="w-full">
@@ -252,15 +277,13 @@
               <label for="filterAssunto">Assunto:</label>
               <select id="filterAssunto" name="assunto" class="w-full">
                 <option value="">Todos</option>
-                <!-- Opções de Assunto serão carregadas via JS -->
-              </select>
+                </select>
             </div>
             <div class="form-group">
               <label for="filterSubAssunto">Sub Assunto:</label>
               <select id="filterSubAssunto" name="subAssunto" class="w-full" disabled>
                 <option value="">Todos</option>
-                <!-- Opções de Sub Assunto serão carregadas via JS -->
-              </select>
+                </select>
             </div>
             <div class="form-group">
               <label for="filterAciResponsavel">ACI Responsável:</label>
@@ -270,73 +293,81 @@
               <label for="filterDestino">Destino:</label>
               <input type="text" id="filterDestino" name="destino" class="w-full">
             </div>
-            <div class="form-group">
-              <label for="filterSaida">Saída:</label>
-              <input type="date" id="filterSaida" name="saida" class="w-full">
+            <div class="form-group flex gap-2">
+              <div class="flex-1">
+                <label for="filterSaidaInicio">Saída (de):</label>
+                <input type="date" id="filterSaidaInicio" name="saidaInicio" class="w-full">
+              </div>
+              <div class="flex-1">
+                <label for="filterSaidaFim">Saída (até):</label>
+                <input type="date" id="filterSaidaFim" name="saidaFim" class="w-full">
+              </div>
             </div>
           </div>
-          <button type="button" id="applyFiltersBtn" class="btn btn-primary w-full sm:w-auto mt-4">
-            Aplicar Filtros
-            <span id="filterSpinner" class="loading-spinner hidden"></span>
-          </button>
-          <button type="button" id="clearFiltersBtn" class="btn btn-secondary w-full sm:w-auto mt-4">
-            Limpar Filtros
-          </button>
+          <div class="flex flex-col gap-2 mt-6">
+            <button type="button" id="applyFiltersBtn" class="btn btn-primary w-full">
+              Aplicar Filtros
+              <span id="filterSpinner" class="loading-spinner hidden"></span>
+            </button>
+            <button type="button" id="clearFiltersBtn" class="btn btn-secondary w-full">
+              Limpar Filtros
+            </button>
+          </div>
         </form>
       </div>
 
-      <!-- Seção de Leitura de Dados -->
-      <div class="p-6 bg-green-50 rounded-lg shadow-sm">
-        <h2 class="text-xl font-bold mb-4 text-green-800">Dados Existentes na Planilha</h2>
-        <button id="refreshDataBtn" class="btn btn-secondary mb-4 w-full sm:w-auto">
-          Atualizar Dados
-          <span id="refreshSpinner" class="loading-spinner hidden"></span>
-        </button>
-        <div id="dataContainer" class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead>
-              <tr>
-                <th class="px-6 py-3 sortable" data-field="sistema">Sistema</th>
-                <th class="px-6 py-3 sortable" data-field="numPaejSaj">Núm.PAE/SAJ</th>
-                <th class="px-6 py-3 sortable" data-field="interessado">Interessado</th>
-                <th class="px-6 py-3 sortable" data-field="entrada">Entrada</th>
-                <th class="px-6 py-3 sortable" data-field="situacao">Situação</th>
-                <th class="px-6 py-3 sortable" data-field="assimetria">Assimetria</th>
-                <th class="px-6 py-3">Observação</th>
-                <th class="px-6 py-3 sortable" data-field="ugOrigem">UG Origem</th>
-                <th class="px-6 py-3 sortable" data-field="assunto">Assunto</th>
-                <th class="px-6 py-3 sortable" data-field="subAssunto">Sub Assunto</th>
-                <th class="px-6 py-3 sortable" data-field="aciResponsavel">ACI Responsável</th>
-                <th class="px-6 py-3 sortable" data-field="destino">Destino</th>
-                <th class="px-6 py-3 sortable" data-field="saida">Saída</th>
-                <th class="px-6 py-3">Ações</th>
-              </tr>
-            </thead>
-            <tbody id="dataTableBody" class="bg-white divide-y divide-gray-200">
-              <!-- Dados serão carregados aqui -->
-              <tr>
-                <td colspan="15" class="text-center py-4 text-gray-500">Nenhum dado carregado.</td>
-              </tr>
-            </tbody>
-          </table>
+      <div class="w-full lg:w-3/4">
+        <div class="card p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-gray-800">Dados Existentes na Planilha</h2>
+            <button id="refreshDataBtn" class="btn btn-secondary">
+              Atualizar Dados
+              <span id="refreshSpinner" class="loading-spinner hidden"></span>
+            </button>
+          </div>
+          
+          <div id="dataContainer" class="table-container" style="max-height: 65vh; overflow-y: auto;">
+            <table class="tabela-dados">
+              <thead>
+                <tr>
+                  <th class="px-4 py-2 sortable" data-field="sistema">Sistema</th>
+                  <th class="px-4 py-2 sortable" data-field="numPaejSaj">Núm.PAE/SAJ</th>
+                  <th class="px-4 py-2 sortable" data-field="interessado">Interessado</th>
+                  <th class="px-4 py-2 sortable" data-field="entrada">Entrada</th>
+                  <th class="px-4 py-2 sortable" data-field="situacao">Situação</th>
+                  <th class="px-4 py-2 sortable" data-field="assimetria">Assimetria</th>
+                  <th class="px-4 py-2">Observação</th>
+                  <th class="px-4 py-2 sortable" data-field="ugOrigem">UG Origem</th>
+                  <th class="px-4 py-2 sortable" data-field="assunto">Assunto</th>
+                  <th class="px-4 py-2 sortable" data-field="subAssunto">Sub Assunto</th>
+                  <th class="px-4 py-2 sortable" data-field="aciResponsavel">ACI Responsável</th>
+                  <th class="px-4 py-2 sortable" data-field="destino">Destino</th>
+                  <th class="px-4 py-2 sortable" data-field="saida">Saída</th>
+                  <th class="px-4 py-2">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="dataTableBody" class="divide-y divide-gray-200">
+                <tr>
+                  <td colspan="15" class="text-center py-4 text-gray-500">Nenhum dado carregado.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="flex justify-between items-center mt-4">
+            <button id="prevPageBtn" class="btn btn-secondary text-sm px-4 py-2" disabled>Anterior</button>
+            <span id="pageInfo" class="text-gray-700 font-semibold text-sm">Página 1 de 1</span>
+            <button id="nextPageBtn" class="btn btn-secondary text-sm px-4 py-2" disabled>Próximo</button>
+          </div>
+          <div id="readMessage" class="message-box hidden mt-4"></div>
         </div>
-        <!-- Controles de Paginação -->
-        <div class="pagination-controls">
-          <button id="prevPageBtn" disabled>Anterior</button>
-          <span id="pageInfo" class="text-gray-700 font-semibold">Página 1 de 1</span>
-          <button id="nextPageBtn" disabled>Próximo</button>
-        </div>
-        <div id="readMessage" class="message-box hidden mt-4"></div>
       </div>
     </div>
 
-    <!-- Modal para Inserção/Edição de Dados -->
     <div id="recordModal" class="modal-overlay hidden">
       <div class="modal-content">
         <button id="closeModalBtn" class="modal-close-btn">&times;</button>
-        <h2 id="modalTitle" class="text-2xl font-bold mb-4 text-blue-800">Adicionar Novo Registro</h2>
+        <h2 id="modalTitle" class="text-2xl font-bold mb-4 text-gray-800">Adicionar Novo Registro</h2>
         <form id="recordFormModal" class="space-y-4">
-          <!-- Campo oculto para armazenar o índice da linha sendo editada -->
           <input type="hidden" id="recordRowIndex" name="rowIndex">
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -392,15 +423,13 @@
               <label for="modalAssunto">Assunto:</label>
               <select id="modalAssunto" name="assunto" class="w-full">
                 <option value="">Selecione</option>
-                <!-- Opções de Assunto serão carregadas via JS -->
-              </select>
+                </select>
             </div>
             <div class="form-group">
               <label for="modalSubAssunto">Sub Assunto:</label>
               <select id="modalSubAssunto" name="subAssunto" class="w-full" disabled>
                 <option value="">Selecione</option>
-                <!-- Opções de Sub Assunto serão carregadas via JS -->
-              </select>
+                </select>
             </div>
             <div class="form-group">
               <label for="modalAciResponsavel">ACI Responsável:</label>
@@ -423,7 +452,6 @@
         </form>
       </div>
     </div>
-
     <script>
       // Variáveis de Paginação
       let currentPage = 1;
@@ -567,7 +595,12 @@
                 if (value && typeof value === 'string' && value.match(/^[0-9]{4}-[0-9]{2}-[0-9]{2}T/)) {
                   inputElement.value = value.split('T')[0];
                 } else {
-                  inputElement.value = '';
+                  // Se o valor é uma data do Apps Script (Date object), formatar para YYYY-MM-DD
+                  if (value instanceof Date && !isNaN(value)) {
+                    inputElement.value = value.toISOString().split('T')[0];
+                  } else {
+                    inputElement.value = '';
+                  }
                 }
               } else if (inputElement.tagName === 'SELECT') {
                 // Para selects, defina o valor diretamente
@@ -827,6 +860,12 @@
             currentFilters[key] = value;
           }
         }
+        // Adicionando filtros de saída por intervalo de datas
+        const saidaInicio = formData.get('saidaInicio');
+        const saidaFim = formData.get('saidaFim');
+        if (saidaInicio) currentFilters.saidaInicio = saidaInicio;
+        if (saidaFim) currentFilters.saidaFim = saidaFim;
+
         currentPage = 1; // Ao aplicar filtros, sempre volte para a primeira página
         lerDadosExistentes();
       });
@@ -940,6 +979,7 @@
           let valB = b[idx];
           // Tenta converter para data se for campo de data
           if (field === 'entrada' || field === 'saida') {
+            // Converte para formato YYYY-MM-DD para comparação correta de datas
             valA = valA.split('/').reverse().join('-');
             valB = valB.split('/').reverse().join('-');
           }
