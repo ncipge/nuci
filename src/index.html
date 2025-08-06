@@ -229,10 +229,6 @@
         <form id="filterForm" class="space-y-4">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div class="form-group">
-              <label for="filterStatus">Status:</label>
-              <input type="text" id="filterStatus" name="status" class="w-full">
-            </div>
-            <div class="form-group">
               <label for="filterSistema">Sistema:</label>
               <select id="filterSistema" name="sistema" class="w-full">
                 <option value="">Todos</option>
@@ -320,7 +316,6 @@
           <table class="min-w-full divide-y divide-gray-200">
             <thead>
               <tr>
-                <th class="px-6 py-3 sortable" data-field="status">Status</th>
                 <th class="px-6 py-3 sortable" data-field="sistema">Sistema</th>
                 <th class="px-6 py-3 sortable" data-field="numPaejSaj">Núm.PAE/SAJ</th>
                 <th class="px-6 py-3 sortable" data-field="interessado">Interessado</th>
@@ -365,10 +360,6 @@
           <input type="hidden" id="recordRowIndex" name="rowIndex">
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div class="form-group">
-              <label for="modalStatus">Status:</label>
-              <input type="text" id="modalStatus" name="status" class="w-full">
-            </div>
             <div class="form-group">
               <label for="modalSistema">Sistema:</label>
               <select id="modalSistema" name="sistema" class="w-full">
@@ -510,7 +501,7 @@
 
       // Nomes dos campos do formulário para fácil iteração (total de 14 campos agora)
       const formFields = [
-        'status', 'sistema', 'numPaejSaj', 'interessado', 'entrada', 'situacao',
+        'sistema', 'numPaejSaj', 'interessado', 'entrada', 'situacao',
         'assimetria', 'observacao', 'ugOrigem', 'assunto', 'subAssunto',
         'aciResponsavel', 'destino', 'saida'
       ];
@@ -518,20 +509,19 @@
       // Mapeamento dos nomes dos campos do formulário para os índices das colunas na planilha (base 0 para JS)
       // ATENÇÃO: ESTE MAPEAMENTO DEVE CORRESPONDER À ORDEM DAS COLUNAS NA SUA PLANILHA GOOGLE
       const sheetColumnIndexes = {
-        status: 0,
-        sistema: 1,
-        numPaejSaj: 2,
-        interessado: 3,
-        entrada: 4,
-        situacao: 5,
-        assimetria: 6,
-        observacao: 7,
-        ugOrigem: 8,
-        assunto: 9,
-        subAssunto: 10,
-        aciResponsavel: 11,
-        destino: 12,
-        saida: 13
+        sistema: 0,
+        numPaejSaj: 1,
+        interessado: 2,
+        entrada: 3,
+        situacao: 4,
+        assimetria: 5,
+        observacao: 6,
+        ugOrigem: 7,
+        assunto: 8,
+        subAssunto: 9,
+        aciResponsavel: 10,
+        destino: 11,
+        saida: 12
       };
 
 

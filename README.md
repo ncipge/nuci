@@ -32,20 +32,19 @@ Este projeto foi clonado do Google Apps Script utilizando o `clasp`.
 
 A planilha utilizada por este projeto deve conter os seguintes campos, nesta ordem:
 
-1. **Status**
-2. **Sistema**
-3. **Núm.PAE/SAJ**
-4. **Interessado**
-5. **Entrada**
-6. **Situação**
-7. **Assimetria**
-8. **Observação**
-9. **UG Origem**
-10. **Assunto**
-11. **Sub Assunto**
-12. **ACI Responsável**
-13. **Destino**
-14. **Saída**
+1. **Sistema**
+2. **Núm.PAE/SAJ**
+3. **Interessado**
+4. **Entrada**
+5. **Situação**
+6. **Assimetria**
+7. **Observação**
+8. **UG Origem**
+9. **Assunto**
+10. **Sub Assunto**
+11. **ACI Responsável**
+12. **Destino**
+13. **Saída**
 
 - **Cabeçalho:** A primeira linha da planilha deve conter exatamente esses nomes de campos.
 - **Aba principal:** Recomenda-se nomear como "Dados" ou conforme a lógica do script.
@@ -60,3 +59,6 @@ A planilha utilizada por este projeto deve conter os seguintes campos, nesta ord
 ---
 
 Este repositório serve para facilitar o desenvolvimento e versionamento do seu projeto Google Apps Script localmente.
+
+// deploymentId salvo para deploys futuros do Google Apps Script
+// Sempre usar: AKfycby8tVF5st56XfelYzuOOXJETKkMmyT0LwFLxyYHPP93lfZBrO4eRG3xbGiQ6xmZWmY2

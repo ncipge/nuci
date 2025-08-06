@@ -126,7 +126,7 @@ function gravarDadosWeb(dados) {
       // Adiciona cabeçalhos se for uma nova aba (IMPORTANTE: Mantenha a ordem dos campos aqui)
       // Ordem final dos campos
       aba.appendRow([
-        'Status', 'Sistema', 'Num. PAEJ S.A.J.', 'Interessado', 'Entrada', 'Situacao',
+        'Sistema', 'Num. PAEJ S.A.J.', 'Interessado', 'Entrada', 'Situacao',
         'Assimetria', 'Observação', 'UG Origem', 'Assunto', 'Sub Assunto',
         'ACI Responsável', 'Destino', 'Saída'
       ]);
@@ -138,7 +138,6 @@ function gravarDadosWeb(dados) {
     // Cria a nova linha com os dados na ordem correta, correspondendo aos cabeçalhos
     // Converte strings de data (YYYY-MM-DD do HTML input type="date") para objetos Date do Apps Script
     var novaLinha = [
-      dados.status,
       dados.sistema,
       dados.numPaejSaj,
       dados.interessado,
@@ -187,24 +186,21 @@ function atualizarDadosWeb(rowIndex, dados) {
     // (A ordem deve corresponder à ordem dos cabeçalhos na planilha)
     // ÍNDICES AQUI SÃO BASE 1 (coluna A é 1, B é 2, etc.) para setValues
     var columnIndexes = {
-      status: 1,
-      sistema: 2,
-      numPaejSaj: 3,
-      interessado: 4,
-      entrada: 5,
-      situacao: 6,
-      assimetria: 7,
-      observacao: 8,
-      ugOrigem: 9,
-      assunto: 10,
-      subAssunto: 11,
-      aciResponsavel: 12,
-      destino: 13,
-      saida: 14
+      sistema: 1,
+      numPaejSaj: 2,
+      interessado: 3,
+      entrada: 4,
+      situacao: 5,
+      assimetria: 6,
+      observacao: 7,
+      ugOrigem: 8,
+      assunto: 9,
+      subAssunto: 10,
+      aciResponsavel: 11,
+      destino: 12,
+      saida: 13
     };
-
-    // Obter a linha existente para garantir que não sobrescrevemos dados indesejados
-    var numColunasTotais = 14; // Agora são 14 colunas no total
+    var numColunasTotais = 13;
     var existingRow = aba.getRange(rowIndex, 1, 1, numColunasTotais).getValues()[0];
 
     // Iterar sobre os dados recebidos e atualizar a linha existente
@@ -264,7 +260,7 @@ function lerTodosOsDadosWeb(pageNumber, pageSize, filters) {
     Logger.log('Última linha da aba "Dados": ' + ultimaLinha + ', Última coluna: ' + ultimaColuna);
 
     // Ajustar o número de colunas para 14 (assumindo que a planilha tem 14 colunas agora)
-    var numColunasEsperadas = 14;
+    var numColunasEsperadas = 13;
     if (ultimaColuna < numColunasEsperadas) {
         Logger.log('Atenção: A planilha tem menos colunas do que o esperado. Lendo até a última coluna disponível.');
         ultimaColuna = numColunasEsperadas; // Garante que o range lido tenha o número correto de colunas
@@ -282,21 +278,21 @@ function lerTodosOsDadosWeb(pageNumber, pageSize, filters) {
     // (A ordem deve corresponder à ordem dos cabeçalhos na planilha)
     // ÍNDICES AQUI SÃO BASE 0 (para acesso ao array de dadosBrutos)
     var columnIndexes = {
-      status: 0,
-      sistema: 1,
-      numPaejSaj: 2,
-      interessado: 3,
-      entrada: 4,
-      situacao: 5,
-      assimetria: 6,
-      observacao: 7,
-      ugOrigem: 8,
-      assunto: 9,
-      subAssunto: 10,
-      aciResponsavel: 11,
-      destino: 12,
-      saida: 13
+      sistema: 0,
+      numPaejSaj: 1,
+      interessado: 2,
+      entrada: 3,
+      situacao: 4,
+      assimetria: 5,
+      observacao: 6,
+      ugOrigem: 7,
+      assunto: 8,
+      subAssunto: 9,
+      aciResponsavel: 10,
+      destino: 11,
+      saida: 12
     };
+    var numColunasEsperadas = 13;
 
     // Aplica os filtros aos dados lidos
     var dadosFiltrados = dadosBrutos.filter(function(row) {
@@ -380,7 +376,7 @@ function lerTodosOsDadosWebSemPaginacao() {
 
     var ultimaLinha = aba.getLastRow();
     var ultimaColuna = aba.getLastColumn();
-    var numColunasEsperadas = 14;
+    var numColunasEsperadas = 13;
     if (ultimaColuna < numColunasEsperadas) {
         Logger.log('Atenção: A planilha tem menos colunas do que o esperado. Lendo até a última coluna disponível.');
         ultimaColuna = numColunasEsperadas;
