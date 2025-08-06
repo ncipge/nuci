@@ -62,13 +62,13 @@ function getAuthorizedUsers() {
     return authorizedEmails;
   }
 
-  // Assume que os e-mails estão na primeira coluna (Coluna A)
-  var emailsRange = abaConfig.getRange(1, 1, lastRow, 1).getValues();
+  // Assume que os e-mails estão na primeira coluna (Coluna A), ignorando o cabeçalho
+  var emailsRange = abaConfig.getRange(2, 1, lastRow - 1, 1).getValues();
 
   emailsRange.forEach(function(row) {
     var email = row[0].toString().trim();
-    if (email) { // Adiciona apenas e-mails não vazios
-      authorizedEmails.add(email.toLowerCase()); // Armazena em minúsculas para comparação sem distinção de maiúsculas e minúsculas
+    if (email) {
+      authorizedEmails.add(email.toLowerCase());
     }
   });
 
@@ -240,7 +240,7 @@ function lerTodosOsDadosWeb(pageNumber, pageSize, filters) {
     var numColunasEsperadas = 13;
     if (ultimaColuna < numColunasEsperadas) {
         Logger.log('Atenção: A planilha tem menos colunas do que o esperado. Lendo até a última coluna disponível.');
-        ultimaColuna = numColunasEsperados; // Garante que o range lido tenha o número correto de colunas
+        ultimaColuna = numColunasEsperadas; // Garante que o range lido tenha o número correto de colunas
     }
 
     if (ultimaLinha < 2 || ultimaColuna === 0) { // Se só tem cabeçalho ou está vazia ou não há colunas
@@ -285,8 +285,8 @@ function lerTodosOsDadosWeb(pageNumber, pageSize, filters) {
 
             // Verifica se o valor da célula contém o valor do filtro
             if (cellValue.indexOf(filterValue) === -1) {
-              match = false; // Não houve correspondência para este filtro
-              break; // Sai do loop de filtros
+              match = false;
+              break;
             }
           } else if (filterValue !== '') { // Se o filtro tem valor, mas a coluna/célula não existe, não há correspondência
             match = false;
@@ -294,6 +294,34 @@ function lerTodosOsDadosWeb(pageNumber, pageSize, filters) {
           }
         }
       }
+
+      // CORREÇÃO: Filtro de saída por intervalo de datas
+      if (filters.saidaInicio || filters.saidaFim) {
+        var columnIndex = columnIndexes['saida'];
+        var cellValue = row[columnIndex];
+        var cellDate = null;
+        // Tenta converter para Date, seja string ou Date
+        if (cellValue instanceof Date && !isNaN(cellValue)) {
+          cellDate = cellValue;
+        } else if (typeof cellValue === 'string' && cellValue.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+          var parts = cellValue.split('/');
+          cellDate = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+        }
+        // Se não conseguiu converter, ignora o registro
+        if (!cellDate || isNaN(cellDate.getTime())) {
+          match = false;
+        } else {
+          if (filters.saidaInicio) {
+            var inicio = new Date(filters.saidaInicio + 'T00:00:00');
+            if (cellDate < inicio) match = false;
+          }
+          if (filters.saidaFim) {
+            var fim = new Date(filters.saidaFim + 'T23:59:59');
+            if (cellDate > fim) match = false;
+          }
+        }
+      }
+
       return match;
     });
 
