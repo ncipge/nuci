@@ -196,26 +196,6 @@
 
       <h1 class="text-3xl font-extrabold text-center mb-6 text-gray-900">Gerenciador de Dados da Planilha</h1>
 
-      <!-- Seção de Dashboard (Conteúdo placeholder por enquanto) -->
-      <div class="mb-8 p-6 bg-purple-50 rounded-lg shadow-sm">
-        <h2 class="text-xl font-bold mb-4 text-purple-800">Dashboard de Resumo</h2>
-        <p class="text-gray-700">Aqui você pode adicionar gráficos, contadores ou resumos dos seus dados. Por exemplo:</p>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-          <div class="bg-purple-100 p-4 rounded-lg shadow-inner">
-            <h3 class="text-lg font-semibold text-purple-700">Total de Registros</h3>
-            <p id="dashboardTotalRecords" class="text-2xl font-bold text-purple-900">...</p>
-          </div>
-          <div class="bg-purple-100 p-4 rounded-lg shadow-inner">
-            <h3 class="text-lg font-semibold text-purple-700">Status "Analisado"</h3>
-            <p id="dashboardStatusAnalisado" class="text-2xl font-bold text-purple-900">...</p>
-          </div>
-          <div class="bg-purple-100 p-4 rounded-lg shadow-inner">
-            <h3 class="text-lg font-semibold text-purple-700">Registros Recentes</h3>
-            <p class="text-lg text-purple-900">Últimos 7 dias: <span id="dashboardRecentRecords">...</span></p>
-          </div>
-        </div>
-      </div>
-
       <!-- Botão para abrir o Formulário de Inserção -->
       <div class="text-center mb-8">
         <button id="openAddRecordModalBtn" class="btn btn-primary text-xl px-8 py-3">
@@ -535,12 +515,18 @@
 
       // Função para esconder mensagens de status
       function hideMessage(elementId) {
-        document.getElementById(elementId).classList.add('hidden');
+        const messageBox = document.getElementById(elementId);
+        if (messageBox) {
+          messageBox.classList.add('hidden');
+        }
       }
 
       // Função para mostrar ou esconder o spinner de carregamento
       function toggleSpinner(spinnerId, show) {
-        document.getElementById(spinnerId).classList.toggle('hidden', !show);
+        const spinner = document.getElementById(spinnerId);
+        if (spinner) {
+          spinner.classList.toggle('hidden', !show);
+        }
       }
 
       // Atualiza os controles de paginação (botões e texto)
@@ -773,7 +759,6 @@
                 setTimeout(() => {
                   closeRecordModal();
                   lerDadosExistentes(); // Recarrega a tabela atualizada
-                  lerDadosDashboard(); // Atualiza o dashboard
                 }, 1500);
               } else {
                 showMessage('modalResponseMessage', response.mensagem, 'error');
@@ -794,7 +779,6 @@
                   closeRecordModal();
                   currentPage = 1; // Volta para a primeira página para ver o novo registro
                   lerDadosExistentes();
-                  lerDadosDashboard(); // Atualiza também o dashboard
                 }, 1500);
               } else {
                 showMessage('modalResponseMessage', response.mensagem, 'error');
@@ -812,7 +796,6 @@
       document.getElementById('refreshDataBtn').addEventListener('click', function() {
         currentPage = 1;
         lerDadosExistentes();
-        lerDadosDashboard(); // Atualiza também o dashboard
       });
 
       // Lida com o clique no botão de página anterior
@@ -904,71 +887,6 @@
             updatePaginationControls();
           })
           .lerTodosOsDadosWeb(currentPage, pageSize, currentFilters);
-      }
-
-      // Função para buscar todos os dados (sem paginação/filtros) para o dashboard
-      function lerDadosDashboard() {
-        google.script.run
-          .withSuccessHandler(function(response) {
-            allDataForDashboard = response.data;
-            console.log('Dados totais para dashboard:', allDataForDashboard.length);
-            updateDashboard();
-          })
-          .withFailureHandler(function(error) {
-            showSpecificError(error);
-            document.getElementById('dashboardTotalRecords').textContent = 'Erro';
-            document.getElementById('dashboardStatusAnalisado').textContent = 'Erro';
-            document.getElementById('dashboardRecentRecords').textContent = 'Erro';
-          })
-          .lerTodosOsDadosWebSemPaginacao();
-      }
-
-      // Função para atualizar os elementos do dashboard
-      function updateDashboard() {
-        // Mapeamento dos índices das colunas para os nomes dos campos (para o dashboard)
-        // ATENÇÃO: Verifique se esses índices correspondem à sua planilha atual
-        const columnIndexMap = {
-            status: 0,
-            sistema: 1,
-            numPaejSaj: 2,
-            interessado: 3,
-            entrada: 4,
-            situacao: 5,
-            assimetria: 6,
-            observacao: 7,
-            ugOrigem: 8,
-            assunto: 9,
-            subAssunto: 10,
-            aciResponsavel: 11,
-            destino: 12,
-            saida: 13
-        };
-
-        document.getElementById('dashboardTotalRecords').textContent = allDataForDashboard.length;
-
-        const statusAnalisadoCount = allDataForDashboard.filter(row =>
-            row[columnIndexMap.status] && row[columnIndexMap.status].toString().toLowerCase() === 'analisado'
-        ).length;
-        document.getElementById('dashboardStatusAnalisado').textContent = statusAnalisadoCount;
-
-        const sevenDaysAgo = new Date();
-        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-        sevenDaysAgo.setHours(0, 0, 0, 0);
-
-        const recentRecordsCount = allDataForDashboard.filter(row => {
-            const entradaDateString = row[columnIndexMap.entrada];
-            if (typeof entradaDateString === 'string' && entradaDateString.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/)) {
-                try {
-                    const entryDate = new Date(entradaDateString);
-                    entryDate.setHours(0, 0, 0, 0);
-                    return entryDate >= sevenDaysAgo;
-                } catch (e) {
-                    return false;
-                }
-            }
-            return false;
-        }).length;
-        document.getElementById('dashboardRecentRecords').textContent = recentRecordsCount;
       }
 
       function loadAssuntoSubAssuntoMap() {
@@ -1065,7 +983,6 @@
                     if (response.sucesso) {
                       showMessage('readMessage', response.mensagem, 'success');
                       lerDadosExistentes();
-                      lerDadosDashboard();
                     } else {
                       showMessage('readMessage', response.mensagem, 'error');
                     }
@@ -1095,7 +1012,6 @@
 
       document.addEventListener('DOMContentLoaded', function() {
         lerDadosExistentes();
-        lerDadosDashboard();
         loadAssuntoSubAssuntoMap();
         displayUserEmail(); // Chama a função para exibir o e-mail do usuário
 
