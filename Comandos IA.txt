@@ -1,0 +1,8 @@
+Abaixo está uma lista de comandos e ações a executar em cada uma delas.
+
+Comando: deploy gas
+Ações:
+1- Analise todas as mudanças que ocorreram no projeto desde o clasp deploy anterior
+2- Se houve mudanças, dê os comandos "clasp push ; clasp deploy --deploymentId AKfycby8tVF5st56XfelYzuOOXJETKkMmyT0LwFLxyYHPP93lfZBrO4eRG3xbGiQ6xmZWmY2 -d <<comentário>>" onde <<comentário>> refere-se às mudanças que foram realizadas.
+3- Atualize o arquivo de versões com a marcação "Em teste"
+4- Peça que eu verifique se o resultado é satisfatório. Se eu responder "Sim" execute os comandos "git add . ; git commit -m "<<comentário>>" ; git push" e altere a marcação "Em teste" para "Estável" no arquivo de versões
