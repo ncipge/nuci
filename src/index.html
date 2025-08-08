@@ -4,167 +4,391 @@
     <base target="_top">
     <title>Gerenciador de Dados da Planilha</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-      /* Estilos personalizados para a fonte e o corpo */
-      body {
-        font-family: 'Inter', sans-serif;
-        background-color: #f8fafc; /* Cor de fundo mais clara */
-        color: #374151; /* Cor de texto padrão */
-      }
-      .container-main {
-        display: flex;
-        flex-direction: column;
-        gap: 2rem;
-        padding: 1.5rem;
-      }
-      @media (min-width: 1024px) {
-        .container-main {
-          flex-direction: row;
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              'inter': ['Inter', 'sans-serif'],
+            },
+            colors: {
+              primary: {
+                50: '#eff6ff',
+                100: '#dbeafe',
+                200: '#bfdbfe',
+                300: '#93c5fd',
+                400: '#60a5fa',
+                500: '#3b82f6',
+                600: '#2563eb',
+                700: '#1d4ed8',
+                800: '#1e40af',
+                900: '#1e3a8a',
+              },
+              gray: {
+                50: '#f9fafb',
+                100: '#f3f4f6',
+                200: '#e5e7eb',
+                300: '#d1d5db',
+                400: '#9ca3af',
+                500: '#6b7280',
+                600: '#4b5563',
+                700: '#374151',
+                800: '#1f2937',
+                900: '#111827',
+              }
+            }
+          }
         }
       }
+    </script>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        color: #374151;
+      }
 
-      /* MELHORIAS VISUAIS PARA FILTROS E TABELA */
-      .card {
-        background-color: #ffffff;
-        border-radius: 0.75rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
-        padding: 1.5rem;
-        border: 1px solid #e2e8f0;
+      .main-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 24px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        margin: 2rem;
+        padding: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
       }
-      
-      .filtro-card {
+
+      .header-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 20px;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .header-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+        opacity: 0.3;
+      }
+
+      .header-content {
+        position: relative;
+        z-index: 1;
+      }
+
+      .user-info {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
         padding: 1rem;
-        margin-bottom: 0.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
       }
+
+      .card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        border: 1px solid #e5e7eb;
+        transition: all 0.3s ease;
+        overflow: hidden;
+      }
+
+      .card:hover {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        transform: translateY(-2px);
+      }
+
+      .card-header {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        padding: 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      .search-container {
+        position: relative;
+        max-width: 400px;
+        margin-left: auto;
+      }
+
+      .search-input {
+        background: white;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 0.75rem 1rem 0.75rem 3rem;
+        width: 100%;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+      }
+
+      .search-input:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        outline: none;
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9ca3af;
+      }
+
+      .filter-card {
+        margin-bottom: 1.5rem;
+      }
+
+      .filter-toggle {
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .filter-toggle:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
       .form-group label {
+        display: block;
         font-size: 0.875rem;
         font-weight: 600;
-        color: #4b5563;
-        margin-bottom: 0.25rem;
-      }
-      .form-group input,
-      .form-group select {
-        background: #f9fafb;
-        border: 1px solid #e5e7eb;
         color: #374151;
-        font-size: 1rem;
-        border-radius: 0.5rem;
-        padding: 0.5rem 0.75rem;
-        margin-bottom: 0.25rem;
-        transition: border-color 0.2s, box-shadow 0.2s;
+        margin-bottom: 0.5rem;
       }
-      .form-group input:focus,
-      .form-group select:focus {
+
+      .form-input, .form-select {
+        background: #f9fafb;
+        border: 2px solid #e5e7eb;
+        color: #374151;
+        font-size: 0.95rem;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        width: 100%;
+        transition: all 0.3s ease;
+      }
+
+      .form-input:focus, .form-select:focus {
         border-color: #3b82f6;
-        box-shadow: 0 0 0 2px #bfdbfe;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        outline: none;
+        background: white;
       }
+
       .btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        gap: 0.5rem;
         padding: 0.75rem 1.5rem;
         font-weight: 600;
-        border-radius: 0.5rem;
-        transition: all 0.2s ease-in-out;
-      }
-      .btn-primary {
-        background-color: #2563eb;
-        color: #fff;
+        border-radius: 10px;
+        transition: all 0.3s ease;
         border: none;
-      }
-      .btn-primary:hover {
-        background-color: #1d4ed8;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      }
-      .btn-secondary {
-        background: #e5e7eb;
-        color: #4b5563;
-        border: 1px solid #d1d5db;
-      }
-      .btn-secondary:hover {
-        background: #d1d5db;
-        color: #374151;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-      }
-      .btn-danger {
-        background-color: #ef4444;
-        color: #fff;
-        border: none;
-      }
-      .btn-danger:hover {
-        background-color: #dc2626;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        font-size: 0.95rem;
       }
 
-      /* TABELA */
-      .table-container {
-        overflow-x: auto;
-        border-radius: 0.75rem;
-        border: 1px solid #e2e8f0;
+      .btn:hover {
+        transform: translateY(-1px);
       }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        color: white;
+        box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+      }
+
+      .btn-primary:hover {
+        box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
+      }
+
+      .btn-secondary {
+        background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+        color: #374151;
+        border: 1px solid #d1d5db;
+      }
+
+      .btn-secondary:hover {
+        background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+
+      .btn-danger {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3);
+      }
+
+      .btn-danger:hover {
+        box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.4);
+      }
+
+      .btn-success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
+      }
+
+      .btn-success:hover {
+        box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.4);
+      }
+
+      .table-container {
+        background: white;
+        border-radius: 16px;
+<<<<<<< HEAD
+        /* overflow: hidden; removido para permitir sticky no cabeçalho */
+=======
+        overflow: hidden;
+>>>>>>> 82b80ec71cd3fe1ce84f654f833580b3a274f399
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e5e7eb;
+      }
+
+      .table-wrapper {
+        max-height: 70vh;
+<<<<<<< HEAD
+        overflow-y: auto;
+        overflow-x: auto;
+=======
+        overflow: auto;
+>>>>>>> 82b80ec71cd3fe1ce84f654f833580b3a274f399
+      }
+
       .tabela-dados {
         width: 100%;
         border-collapse: collapse;
       }
+
       .tabela-dados thead th {
-        position: sticky;
+        position: sticky !important;
         top: 0;
-        background: #f1f5f9;
-        color: #64748b;
+<<<<<<< HEAD
         z-index: 2;
+        background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+        color: white;
+=======
+        background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+        color: white;
+        z-index: 10;
+>>>>>>> 82b80ec71cd3fe1ce84f654f833580b3a274f399
         font-size: 0.875rem;
         font-weight: 700;
         text-transform: uppercase;
-        border-bottom: 2px solid #e2e8f0;
+        letter-spacing: 0.05em;
+        padding: 1rem 0.75rem;
+        border-bottom: 2px solid #4b5563;
       }
+
       .tabela-dados tbody tr {
-        transition: background-color 0.2s;
+        transition: all 0.2s ease;
+        border-bottom: 1px solid #f3f4f6;
       }
+
       .tabela-dados tbody tr:nth-child(even) {
         background: #f8fafc;
       }
+
       .tabela-dados tbody tr:hover {
-        background: #eef2ff;
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        transform: scale(1.01);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
+
       .tabela-dados td {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         color: #4b5563;
-        border-bottom: 1px solid #f3f4f6;
-      }
-      .tabela-dados th, .tabela-dados td {
-        padding: 0.75rem 1rem;
+        padding: 1rem 0.75rem;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        max-width: 200px;
       }
+
       .tabela-dados th.sortable {
         cursor: pointer;
         position: relative;
+        user-select: none;
       }
+
+      .tabela-dados th.sortable:hover {
+        background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+      }
+
       .tabela-dados th.sorted-asc::after {
-        content: ' ▲';
-        font-size: 0.8em;
+        content: ' ↑';
+        font-size: 1rem;
+        color: #3b82f6;
       }
+
       .tabela-dados th.sorted-desc::after {
-        content: ' ▼';
-        font-size: 0.8em;
+        content: ' ↓';
+        font-size: 1rem;
+        color: #3b82f6;
       }
+
+      .pagination-container {
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: between;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .page-info {
+        background: white;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        color: #374151;
+        border: 1px solid #e5e7eb;
+      }
+
       .message-box {
-        padding: 0.75rem;
-        border-radius: 0.5rem;
+        padding: 1rem;
+        border-radius: 12px;
         font-weight: 500;
+        margin: 1rem 0;
+        border-left: 4px solid;
       }
+
       .message-box.success {
-        background-color: #d1fae5;
+        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
         color: #065f46;
+        border-left-color: #10b981;
       }
+
       .message-box.error {
-        background-color: #fee2e2;
+        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
         color: #991b1b;
+        border-left-color: #ef4444;
       }
+
       .loading-spinner {
         border: 2px solid #f3f3f3;
         border-top: 2px solid #3b82f6;
@@ -172,70 +396,311 @@
         width: 1.25rem;
         height: 1.25rem;
         animation: spin 1s linear infinite;
-        margin-left: 0.5rem;
         display: inline-block;
       }
+
       @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
       }
-      
-      /* Estilos para o Modal */
+
       .modal-overlay {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
         display: flex;
         justify-content: center;
         align-items: center;
         z-index: 50;
+        padding: 1rem;
       }
+
       .modal-content {
-        background-color: #fff;
-        border-radius: 0.75rem;
+        background: white;
+        border-radius: 20px;
         padding: 2rem;
-        max-width: 900px;
-        width: 90%;
+        max-width: 1200px;
+        width: 100%;
         max-height: 90vh;
         overflow-y: auto;
         position: relative;
-        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        border: 1px solid rgba(255, 255, 255, 0.2);
       }
+
+      .modal-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.5rem 2rem;
+        margin: -2rem -2rem 2rem -2rem;
+        border-radius: 20px 20px 0 0;
+        position: relative;
+      }
+
       .modal-close-btn {
         position: absolute;
         top: 1rem;
-        right: 1rem;
-        font-size: 2rem;
-        color: #9ca3af;
+        right: 1.5rem;
+        font-size: 1.5rem;
+        color: white;
         cursor: pointer;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        width: 2.5rem;
+        height: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+<<<<<<< HEAD
+=======
       }
-    </style>
+
+      .modal-close-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.1);
+      }
+
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .status-conforme {
+        background: #d1fae5;
+        color: #065f46;
+      }
+
+      .status-parcial {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .status-inconforme {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .footer {
+        background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+        color: white;
+        text-align: center;
+        padding: 2rem;
+        margin-top: 3rem;
+        border-radius: 20px;
+        font-weight: 600;
+      }
+
+      @media (max-width: 768px) {
+        .main-container {
+          margin: 1rem;
+          padding: 1rem;
+          border-radius: 16px;
+        }
+
+        .header-section {
+          padding: 1.5rem;
+          border-radius: 16px;
+        }
+
+        .modal-content {
+          margin: 0.5rem;
+          padding: 1.5rem;
+          border-radius: 16px;
+        }
+
+        .modal-header {
+          margin: -1.5rem -1.5rem 1.5rem -1.5rem;
+          padding: 1rem 1.5rem;
+          border-radius: 16px 16px 0 0;
+        }
+
+        .tabela-dados td {
+          max-width: 120px;
+          font-size: 0.8rem;
+        }
+      }
+
+      .animate-fade-in {
+        animation: fadeIn 0.5s ease-in-out;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .animate-slide-down {
+        animation: slideDown 0.3s ease-out;
+      }
+
+      @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+>>>>>>> 82b80ec71cd3fe1ce84f654f833580b3a274f399
+      }
+
+      .modal-close-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.1);
+      }
+
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .status-conforme {
+        background: #d1fae5;
+        color: #065f46;
+      }
+
+      .status-parcial {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .status-inconforme {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .footer {
+        background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+        color: white;
+        text-align: center;
+        padding: 2rem;
+        margin-top: 3rem;
+        border-radius: 20px;
+        font-weight: 600;
+      }
+
+      @media (max-width: 768px) {
+        .main-container {
+          margin: 1rem;
+          padding: 1rem;
+          border-radius: 16px;
+        }
+
+        .header-section {
+          padding: 1.5rem;
+          border-radius: 16px;
+        }
+
+        .modal-content {
+          margin: 0.5rem;
+          padding: 1.5rem;
+          border-radius: 16px;
+        }
+
+        .modal-header {
+          margin: -1.5rem -1.5rem 1.5rem -1.5rem;
+          padding: 1rem 1.5rem;
+          border-radius: 16px 16px 0 0;
+        }
+
+        .tabela-dados td {
+          max-width: 120px;
+          font-size: 0.8rem;
+        }
+      }
+
+      .animate-fade-in {
+        animation: fadeIn 0.5s ease-in-out;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .animate-slide-down {
+        animation: slideDown 0.3s ease-out;
+      }
+
+      @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    </style
   </head>
-  <body class="bg-gray-50 p-4 sm:p-6 md:p-8">
-    
-    <div class="text-right text-gray-600 text-sm mb-4">
-      Usuário logado: <span id="userEmailDisplay" class="font-semibold text-gray-800">Carregando...</span>
-    </div>
+  <body class="min-h-screen">
+    <div class="main-container animate-fade-in">
+      <!-- Header Section -->
+      <div class="header-section">
+        <div class="header-content">
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <h1 class="text-3xl md:text-4xl font-bold mb-2">
+                <i class="fas fa-database mr-3"></i>
+                Gerenciador de Dados
+              </h1>
+              <p class="text-lg opacity-90">Sistema de controle e análise de processos</p>
+            </div>
+            <div class="user-info">
+              <div class="flex items-center gap-2">
+                <i class="fas fa-user-circle text-xl"></i>
+                <div>
+                  <p class="text-sm opacity-75">Usuário logado:</p>
+                  <p id="userEmailDisplay" class="font-semibold">Carregando...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    <h1 class="text-3xl font-extrabold text-center mb-6 text-gray-900">Gerenciador de Dados da Planilha</h1>
+      <!-- Search Section -->
+      <div class="search-container mb-6">
+        <div class="relative">
+          <i class="fas fa-search search-icon"></i>
+          <input 
+            type="text" 
+            id="globalSearchInput" 
+            placeholder="Buscar em todos os campos..." 
+            class="search-input"
+          />
+        </div>
+      </div>
 
-    <div class="text-center mb-8">
-      <button id="openAddRecordModalBtn" class="btn btn-primary text-xl px-8 py-3">
-        + Adicionar Novo Registro
-      </button>
-    </div>
-
-    <div class="container-main">
-      <div class="w-full lg:w-1/4 card h-fit sticky top-4">
-        <h2 class="text-xl font-bold mb-4 text-gray-800">Filtrar Dados</h2>
-        <form id="filterForm" class="space-y-4">
-          <div class="grid grid-cols-1 gap-4">
+      <!-- Filters Section -->
+      <div class="card filter-card">
+        <div class="card-header">
+          <div class="flex justify-between items-center cursor-pointer select-none" id="filterCardHeader">
+            <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+              <i class="fas fa-filter"></i>
+              Filtros Avançados
+            </h2>
+            <button type="button" id="toggleFilterCardBtn" class="filter-toggle">
+              <i class="fas fa-chevron-down transition-transform duration-300" id="filterChevron"></i>
+              Exibir Filtros
+            </button>
+          </div>
+        </div>
+        <div class="p-6" id="filterFormContainer" style="display: none;">
+          <form id="filterForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <div class="form-group">
-              <label for="filterSistema">Sistema:</label>
-              <select id="filterSistema" name="sistema" class="w-full">
+              <label for="filterSistema">
+                <i class="fas fa-cogs mr-1"></i>
+                Sistema:
+              </label>
+              <select id="filterSistema" name="sistema" class="form-select">
                 <option value="">Todos</option>
                 <option value="PAE 3.0">PAE 3.0</option>
                 <option value="PAE 4.0">PAE 4.0</option>
@@ -243,16 +708,25 @@
               </select>
             </div>
             <div class="form-group">
-              <label for="filterNumPaejSaj">Núm.PAE/SAJ:</label>
-              <input type="text" id="filterNumPaejSaj" name="numPaejSaj" class="w-full">
+              <label for="filterNumPaejSaj">
+                <i class="fas fa-hashtag mr-1"></i>
+                Núm.PAE/SAJ:
+              </label>
+              <input type="text" id="filterNumPaejSaj" name="numPaejSaj" class="form-input">
             </div>
             <div class="form-group">
-              <label for="filterInteressado">Interessado:</label>
-              <input type="text" id="filterInteressado" name="interessado" class="w-full">
+              <label for="filterInteressado">
+                <i class="fas fa-user mr-1"></i>
+                Interessado:
+              </label>
+              <input type="text" id="filterInteressado" name="interessado" class="form-input">
             </div>
             <div class="form-group">
-              <label for="filterSituacao">Situação:</label>
-              <select id="filterSituacao" name="situacao" class="w-full">
+              <label for="filterSituacao">
+                <i class="fas fa-flag mr-1"></i>
+                Situação:
+              </label>
+              <select id="filterSituacao" name="situacao" class="form-select">
                 <option value="">Todos</option>
                 <option value="CONFORME">CONFORME</option>
                 <option value="CONFORME PARCIAL">CONFORME PARCIAL</option>
@@ -260,9 +734,18 @@
               </select>
             </div>
             <div class="form-group">
-              <label for="filterAssimetria">Assimetria:</label>
-              <select id="filterAssimetria" name="assimetria" class="w-full">
+<<<<<<< HEAD
+              <label for="filterAssimetria">
+                <i class="fas fa-exclamation-triangle mr-1"></i>
+                Assimetria:
+              </label>
+              <select id="filterAssimetria" name="assimetria" class="form-select">
                 <option value="">Todos</option>
+=======
+              <label for="modalAssimetria">Assimetria:</label>
+              <select id="modalAssimetria" name="as" class="w-full">
+                <option value="">Selecione</option>
+>>>>>>> 37e3fa9 (Deploy automático via GitHub Copilot em 07/08/2025)
                 <option value="DESACORDO LEGAL">DESACORDO LEGAL</option>
                 <option value="FALTA DE DOCUMENTO">FALTA DE DOCUMENTO</option>
                 <option value="PRAZO">PRAZO</option>
@@ -270,110 +753,202 @@
               </select>
             </div>
             <div class="form-group">
-              <label for="filterUgOrigem">UG Origem:</label>
-              <input type="text" id="filterUgOrigem" name="ugOrigem" class="w-full">
+              <label for="filterUgOrigem">
+                <i class="fas fa-building mr-1"></i>
+                UG Origem:
+              </label>
+              <input type="text" id="filterUgOrigem" name="ugOrigem" class="form-input">
             </div>
             <div class="form-group">
-              <label for="filterAssunto">Assunto:</label>
-              <select id="filterAssunto" name="assunto" class="w-full">
+              <label for="filterAssunto">
+                <i class="fas fa-tag mr-1"></i>
+                Assunto:
+              </label>
+              <select id="filterAssunto" name="assunto" class="form-select">
                 <option value="">Todos</option>
-                </select>
+              </select>
             </div>
             <div class="form-group">
-              <label for="filterSubAssunto">Sub Assunto:</label>
-              <select id="filterSubAssunto" name="subAssunto" class="w-full" disabled>
+              <label for="filterSubAssunto">
+                <i class="fas fa-tags mr-1"></i>
+                Sub Assunto:
+              </label>
+              <select id="filterSubAssunto" name="subAssunto" class="form-select" disabled>
                 <option value="">Todos</option>
-                </select>
+              </select>
             </div>
             <div class="form-group">
-              <label for="filterAciResponsavel">ACI Responsável:</label>
-              <input type="text" id="filterAciResponsavel" name="aciResponsavel" class="w-full">
+              <label for="filterAciResponsavel">
+                <i class="fas fa-user-tie mr-1"></i>
+                ACI Responsável:
+              </label>
+              <input type="text" id="filterAciResponsavel" name="aciResponsavel" class="form-input">
             </div>
             <div class="form-group">
-              <label for="filterDestino">Destino:</label>
-              <input type="text" id="filterDestino" name="destino" class="w-full">
+              <label for="filterDestino">
+                <i class="fas fa-map-marker-alt mr-1"></i>
+                Destino:
+              </label>
+              <input type="text" id="filterDestino" name="destino" class="form-input">
             </div>
-            <div class="form-group flex gap-2">
-              <div class="flex-1">
-                <label for="filterSaidaInicio">Saída (de):</label>
-                <input type="date" id="filterSaidaInicio" name="saidaInicio" class="w-full">
-              </div>
-              <div class="flex-1">
-                <label for="filterSaidaFim">Saída (até):</label>
-                <input type="date" id="filterSaidaFim" name="saidaFim" class="w-full">
-              </div>
+            <div class="form-group">
+              <label for="filterSaidaInicio">
+                <i class="fas fa-calendar-alt mr-1"></i>
+                Saída (de):
+              </label>
+              <input type="date" id="filterSaidaInicio" name="saidaInicio" class="form-input">
             </div>
-          </div>
-          <div class="flex flex-col gap-2 mt-6">
-            <button type="button" id="applyFiltersBtn" class="btn btn-primary w-full">
-              Aplicar Filtros
-              <span id="filterSpinner" class="loading-spinner hidden"></span>
-            </button>
-            <button type="button" id="clearFiltersBtn" class="btn btn-secondary w-full">
-              Limpar Filtros
-            </button>
-          </div>
-        </form>
+            <div class="form-group">
+              <label for="filterSaidaFim">
+                <i class="fas fa-calendar-alt mr-1"></i>
+                Saída (até):
+              </label>
+              <input type="date" id="filterSaidaFim" name="saidaFim" class="form-input">
+            </div>
+            <div class="flex gap-3 col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-4 mt-4">
+              <button type="button" id="applyFiltersBtn" class="btn btn-primary">
+                <i class="fas fa-search"></i>
+                Aplicar Filtros
+                <span id="filterSpinner" class="loading-spinner hidden ml-2"></span>
+              </button>
+              <button type="button" id="clearFiltersBtn" class="btn btn-secondary">
+                <i class="fas fa-times"></i>
+                Limpar Filtros
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
 
-      <div class="w-full lg:w-3/4">
-        <div class="card p-6">
-          <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold text-gray-800">Dados Existentes na Planilha</h2>
-            <button id="refreshDataBtn" class="btn btn-secondary">
-              Atualizar Dados
-              <span id="refreshSpinner" class="loading-spinner hidden"></span>
-            </button>
+      <!-- Data Table Section -->
+      <div class="card">
+        <div class="card-header">
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+              <i class="fas fa-table"></i>
+              Dados da Planilha
+            </h2>
+            <div class="flex gap-3">
+              <button id="refreshDataBtn" class="btn btn-secondary">
+                <i class="fas fa-sync-alt"></i>
+                Atualizar
+                <span id="refreshSpinner" class="loading-spinner hidden ml-2"></span>
+              </button>
+              <button id="openAddRecordModalBtn" class="btn btn-success">
+                <i class="fas fa-plus"></i>
+                Novo Registro
+              </button>
+            </div>
           </div>
-          
-          <div id="dataContainer" class="table-container" style="max-height: 65vh; overflow-y: auto;">
+        </div>
+        
+        <div class="table-container">
+          <div class="table-wrapper" id="dataContainer">
             <table class="tabela-dados">
               <thead>
                 <tr>
-                  <th class="px-4 py-2 sortable" data-field="sistema">Sistema</th>
-                  <th class="px-4 py-2 sortable" data-field="numPaejSaj">Núm.PAE/SAJ</th>
-                  <th class="px-4 py-2 sortable" data-field="interessado">Interessado</th>
-                  <th class="px-4 py-2 sortable" data-field="entrada">Entrada</th>
-                  <th class="px-4 py-2 sortable" data-field="situacao">Situação</th>
-                  <th class="px-4 py-2 sortable" data-field="assimetria">Assimetria</th>
-                  <th class="px-4 py-2">Observação</th>
-                  <th class="px-4 py-2 sortable" data-field="ugOrigem">UG Origem</th>
-                  <th class="px-4 py-2 sortable" data-field="assunto">Assunto</th>
-                  <th class="px-4 py-2 sortable" data-field="subAssunto">Sub Assunto</th>
-                  <th class="px-4 py-2 sortable" data-field="aciResponsavel">ACI Responsável</th>
-                  <th class="px-4 py-2 sortable" data-field="destino">Destino</th>
-                  <th class="px-4 py-2 sortable" data-field="saida">Saída</th>
-                  <th class="px-4 py-2">Ações</th>
+                  <th class="sortable" data-field="sistema">
+                    <i class="fas fa-cogs mr-1"></i>Sistema
+                  </th>
+                  <th class="sortable" data-field="numPaejSaj">
+                    <i class="fas fa-hashtag mr-1"></i>Núm.PAE/SAJ
+                  </th>
+                  <th class="sortable" data-field="interessado">
+                    <i class="fas fa-user mr-1"></i>Interessado
+                  </th>
+                  <th class="sortable" data-field="entrada">
+                    <i class="fas fa-calendar-plus mr-1"></i>Entrada
+                  </th>
+                  <th class="sortable" data-field="situacao">
+                    <i class="fas fa-flag mr-1"></i>Situação
+                  </th>
+                  <th class="sortable" data-field="assimetria">
+                    <i class="fas fa-exclamation-triangle mr-1"></i>Assimetria
+                  </th>
+                  <th>
+                    <i class="fas fa-comment mr-1"></i>Observação
+                  </th>
+                  <th class="sortable" data-field="ugOrigem">
+                    <i class="fas fa-building mr-1"></i>UG Origem
+                  </th>
+                  <th class="sortable" data-field="assunto">
+                    <i class="fas fa-tag mr-1"></i>Assunto
+                  </th>
+                  <th class="sortable" data-field="subAssunto">
+                    <i class="fas fa-tags mr-1"></i>Sub Assunto
+                  </th>
+                  <th class="sortable" data-field="aciResponsavel">
+                    <i class="fas fa-user-tie mr-1"></i>ACI Responsável
+                  </th>
+                  <th class="sortable" data-field="destino">
+                    <i class="fas fa-map-marker-alt mr-1"></i>Destino
+                  </th>
+                  <th class="sortable" data-field="saida">
+                    <i class="fas fa-calendar-minus mr-1"></i>Saída
+                  </th>
+                  <th>
+                    <i class="fas fa-cog mr-1"></i>Ações
+                  </th>
                 </tr>
               </thead>
-              <tbody id="dataTableBody" class="divide-y divide-gray-200">
+              <tbody id="dataTableBody">
                 <tr>
-                  <td colspan="15" class="text-center py-4 text-gray-500">Nenhum dado carregado.</td>
+                  <td colspan="14" class="text-center py-8 text-gray-500">
+                    <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                    <br>Carregando dados...
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <div class="flex justify-between items-center mt-4">
-            <button id="prevPageBtn" class="btn btn-secondary text-sm px-4 py-2" disabled>Anterior</button>
-            <span id="pageInfo" class="text-gray-700 font-semibold text-sm">Página 1 de 1</span>
-            <button id="nextPageBtn" class="btn btn-secondary text-sm px-4 py-2" disabled>Próximo</button>
+          
+          <div class="pagination-container">
+            <button id="prevPageBtn" class="btn btn-secondary" disabled>
+              <i class="fas fa-chevron-left"></i>
+              Anterior
+            </button>
+            <div class="page-info" id="pageInfo">Página 1 de 1</div>
+            <button id="nextPageBtn" class="btn btn-secondary" disabled>
+              Próximo
+              <i class="fas fa-chevron-right"></i>
+            </button>
           </div>
-          <div id="readMessage" class="message-box hidden mt-4"></div>
         </div>
+        
+        <div id="readMessage" class="message-box hidden"></div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>
+          <i class="fas fa-code mr-2"></i>
+          Desenvolvido por <strong>DTIGD</strong> © 2025
+        </p>
       </div>
     </div>
 
+    <!-- Modal -->
     <div id="recordModal" class="modal-overlay hidden">
-      <div class="modal-content">
-        <button id="closeModalBtn" class="modal-close-btn">&times;</button>
-        <h2 id="modalTitle" class="text-2xl font-bold mb-4 text-gray-800">Adicionar Novo Registro</h2>
-        <form id="recordFormModal" class="space-y-4">
+      <div class="modal-content animate-fade-in">
+        <div class="modal-header">
+          <h2 id="modalTitle" class="text-2xl font-bold flex items-center gap-2">
+            <i class="fas fa-plus-circle"></i>
+            Adicionar Novo Registro
+          </h2>
+          <button id="closeModalBtn" class="modal-close-btn">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        
+        <form id="recordFormModal" class="space-y-6">
           <input type="hidden" id="recordRowIndex" name="rowIndex">
-
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <div class="form-group">
-              <label for="modalSistema">Sistema:</label>
-              <select id="modalSistema" name="sistema" class="w-full">
+              <label for="modalSistema">
+                <i class="fas fa-cogs mr-1"></i>
+                Sistema:
+              </label>
+              <select id="modalSistema" name="sistema" class="form-select">
                 <option value="">Selecione</option>
                 <option value="PAE 3.0">PAE 3.0</option>
                 <option value="PAE 4.0">PAE 4.0</option>
@@ -381,29 +956,44 @@
               </select>
             </div>
             <div class="form-group">
-              <label for="modalNumPaejSaj">Núm.PAE/SAJ:</label>
-              <input type="text" id="modalNumPaejSaj" name="numPaejSaj" class="w-full">
+              <label for="modalNumPaejSaj">
+                <i class="fas fa-hashtag mr-1"></i>
+                Núm.PAE/SAJ:
+              </label>
+              <input type="text" id="modalNumPaejSaj" name="numPaejSaj" class="form-input">
             </div>
             <div class="form-group">
-              <label for="modalInteressado">Interessado:</label>
-              <input type="text" id="modalInteressado" name="interessado" class="w-full">
+              <label for="modalInteressado">
+                <i class="fas fa-user mr-1"></i>
+                Interessado:
+              </label>
+              <input type="text" id="modalInteressado" name="interessado" class="form-input">
             </div>
             <div class="form-group">
-              <label for="modalEntrada">Entrada:</label>
-              <input type="date" id="modalEntrada" name="entrada" class="w-full">
+              <label for="modalEntrada">
+                <i class="fas fa-calendar-plus mr-1"></i>
+                Entrada:
+              </label>
+              <input type="date" id="modalEntrada" name="entrada" class="form-input">
             </div>
             <div class="form-group">
-              <label for="modalSituacao">Situação:</label>
-              <select id="modalSituacao" name="situacao" class="w-full">
+              <label for="modalSituacao">
+                <i class="fas fa-flag mr-1"></i>
+                Situação:
+              </label>
+              <select id="modalSituacao" name="situacao" class="form-select">
                 <option value="">Selecione</option>
-                <option value="CONFORME">CONFORME</option>
-                <option value="CONFORME PARCIAL">CONFORME PARCIAL</option>
-                <option value="INCONFORME">INCONFORME</option>
+                <option value="Conforme">Conforme</option>
+                <option value="Parcialmente Conforme">Parcialmente Conforme</option>
+                <option value="Assimetrias">Assimetrias</option>
               </select>
             </div>
             <div class="form-group">
-              <label for="modalAssimetria">Assimetria:</label>
-              <select id="modalAssimetria" name="assimetria" class="w-full">
+              <label for="modalAssimetria">
+                <i class="fas fa-exclamation-triangle mr-1"></i>
+                Assimetria:
+              </label>
+              <select id="modalAssimetria" name="assimetria" class="form-select">
                 <option value="">Selecione</option>
                 <option value="DESACORDO LEGAL">DESACORDO LEGAL</option>
                 <option value="FALTA DE DOCUMENTO">FALTA DE DOCUMENTO</option>
@@ -411,58 +1001,89 @@
                 <option value="ESCLARECIMENTO">ESCLARECIMENTO</option>
               </select>
             </div>
-            <div class="form-group">
-              <label for="modalObservacao">Observação:</label>
-              <textarea id="modalObservacao" name="observacao" rows="2" class="w-full"></textarea>
+            <div class="form-group xl:col-span-2">
+              <label for="modalObservacao">
+                <i class="fas fa-comment mr-1"></i>
+                Observação:
+              </label>
+              <textarea id="modalObservacao" name="observacao" rows="3" class="form-input resize-none"></textarea>
             </div>
             <div class="form-group">
-              <label for="modalUgOrigem">UG Origem:</label>
-              <input type="text" id="modalUgOrigem" name="ugOrigem" class="w-full">
+              <label for="modalUgOrigem">
+                <i class="fas fa-building mr-1"></i>
+                UG Origem:
+              </label>
+              <input type="text" id="modalUgOrigem" name="ugOrigem" class="form-input">
             </div>
             <div class="form-group">
-              <label for="modalAssunto">Assunto:</label>
-              <select id="modalAssunto" name="assunto" class="w-full">
+              <label for="modalAssunto">
+                <i class="fas fa-tag mr-1"></i>
+                Assunto:
+              </label>
+              <select id="modalAssunto" name="assunto" class="form-select">
                 <option value="">Selecione</option>
-                </select>
+              </select>
             </div>
             <div class="form-group">
-              <label for="modalSubAssunto">Sub Assunto:</label>
-              <select id="modalSubAssunto" name="subAssunto" class="w-full" disabled>
+              <label for="modalSubAssunto">
+                <i class="fas fa-tags mr-1"></i>
+                Sub Assunto:
+              </label>
+              <select id="modalSubAssunto" name="subAssunto" class="form-select" disabled>
                 <option value="">Selecione</option>
-                </select>
+              </select>
             </div>
             <div class="form-group">
-              <label for="modalAciResponsavel">ACI Responsável:</label>
-              <input type="text" id="modalAciResponsavel" name="aciResponsavel" class="w-full">
+              <label for="modalAciResponsavel">
+                <i class="fas fa-user-tie mr-1"></i>
+                ACI Responsável:
+              </label>
+              <input type="text" id="modalAciResponsavel" name="aciResponsavel" class="form-input">
             </div>
             <div class="form-group">
-              <label for="modalDestino">Destino:</label>
-              <input type="text" id="modalDestino" name="destino" class="w-full">
+              <label for="modalDestino">
+                <i class="fas fa-map-marker-alt mr-1"></i>
+                Destino:
+              </label>
+              <input type="text" id="modalDestino" name="destino" class="form-input">
             </div>
             <div class="form-group">
-              <label for="modalSaida">Saída:</label>
-              <input type="date" id="modalSaida" name="saida" class="w-full">
+              <label for="modalSaida">
+                <i class="fas fa-calendar-minus mr-1"></i>
+                Saída:
+              </label>
+              <input type="date" id="modalSaida" name="saida" class="form-input">
             </div>
           </div>
-          <button type="submit" id="modalSubmitBtn" class="btn btn-primary w-full sm:w-auto mt-4">
-            Gravar Registro
-            <span id="modalLoadingSpinner" class="loading-spinner hidden"></span>
-          </button>
+          
+          <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+            <button type="button" onclick="closeRecordModal()" class="btn btn-secondary">
+              <i class="fas fa-times"></i>
+              Cancelar
+            </button>
+            <button type="submit" id="modalSubmitBtn" class="btn btn-primary">
+              <i class="fas fa-save"></i>
+              Gravar Registro
+              <span id="modalLoadingSpinner" class="loading-spinner hidden ml-2"></span>
+            </button>
+          </div>
+          
           <div id="modalResponseMessage" class="message-box hidden"></div>
         </form>
       </div>
     </div>
+
     <script>
       // Variáveis de Paginação
       let currentPage = 1;
-      const pageSize = 20; // Defina o número de registros por página
+      const pageSize = 20;
       let totalRecords = 0;
       let totalPages = 1;
-      let currentFilters = {}; // Objeto para armazenar os filtros ativos
+      let currentFilters = {};
 
       // Variáveis do Dashboard
-      let allDataForDashboard = []; // Para armazenar todos os dados brutos para o dashboard
-      let currentTableData = []; // Para armazenar os dados da tabela atual para edição
+      let allDataForDashboard = [];
+      let currentTableData = [];
 
       // Referências aos elementos do modal
       const recordModal = document.getElementById('recordModal');
@@ -477,7 +1098,7 @@
       // Referência ao campo oculto para o índice da linha
       const recordRowIndex = document.getElementById('recordRowIndex');
 
-      // Referências aos campos Sistema e Num. PAEJ S.A.J. (para máscara)
+      // Referências aos campos Sistema e Num. PAEJ S.A.J.
       const modalSistemaSelect = document.getElementById('modalSistema');
       const modalNumPaejSajInput = document.getElementById('modalNumPaejSaj');
       const sistemaSelectFilter = document.getElementById('filterSistema');
@@ -486,16 +1107,16 @@
       const modalSituacaoSelect = document.getElementById('modalSituacao');
       const modalAssimetriaSelect = document.getElementById('modalAssimetria');
 
-      // Novas referências para os campos Assunto e Sub Assunto (modal e filtro)
+      // Referências para os campos Assunto e Sub Assunto
       const modalAssuntoSelect = document.getElementById('modalAssunto');
       const modalSubAssuntoSelect = document.getElementById('modalSubAssunto');
       const filterAssuntoSelect = document.getElementById('filterAssunto');
       const filterSubAssuntoSelect = document.getElementById('filterSubAssunto');
 
-      // Referências para os novos campos ACI Responsável, Destino e Saída (modal e filtro)
+      // Referências para os novos campos
       const modalAciResponsavelInput = document.getElementById('modalAciResponsavel');
       const modalDestinoInput = document.getElementById('modalDestino');
-      const modalSaidaInput = document.getElementById('modalSaida'); // Input de data já existia, mas referenciando explicitamente
+      const modalSaidaInput = document.getElementById('modalSaida');
 
       const filterAciResponsavelInput = document.getElementById('filterAciResponsavel');
       const filterDestinoInput = document.getElementById('filterDestino');
@@ -504,18 +1125,16 @@
       // Referência para exibir o e-mail do usuário
       const userEmailDisplay = document.getElementById('userEmailDisplay');
 
+      let assuntoSubAssuntoMap = {};
 
-      let assuntoSubAssuntoMap = {}; // Variável para armazenar o mapeamento Assunto -> Sub Assuntos
-
-      // Nomes dos campos do formulário para fácil iteração (total de 14 campos agora)
+      // Nomes dos campos do formulário
       const formFields = [
         'sistema', 'numPaejSaj', 'interessado', 'entrada', 'situacao',
         'assimetria', 'observacao', 'ugOrigem', 'assunto', 'subAssunto',
         'aciResponsavel', 'destino', 'saida'
       ];
 
-      // Mapeamento dos nomes dos campos do formulário para os índices das colunas na planilha (base 0 para JS)
-      // ATENÇÃO: ESTE MAPEAMENTO DEVE CORRESPONDER À ORDEM DAS COLUNAS NA SUA PLANILHA GOOGLE
+      // Mapeamento dos nomes dos campos para os índices das colunas
       const sheetColumnIndexes = {
         sistema: 0,
         numPaejSaj: 1,
@@ -532,12 +1151,29 @@
         saida: 12
       };
 
+      // Toggle do card de filtros
+      document.getElementById('toggleFilterCardBtn').addEventListener('click', function() {
+        const filterForm = document.getElementById('filterFormContainer');
+        const chevron = document.getElementById('filterChevron');
+        const isHidden = filterForm.style.display === 'none';
+        
+        if (isHidden) {
+          filterForm.style.display = 'block';
+          filterForm.classList.add('animate-slide-down');
+          chevron.style.transform = 'rotate(180deg)';
+          this.innerHTML = '<i class="fas fa-chevron-up transition-transform duration-300"></i> Ocultar Filtros';
+        } else {
+          filterForm.style.display = 'none';
+          chevron.style.transform = 'rotate(0deg)';
+          this.innerHTML = '<i class="fas fa-chevron-down transition-transform duration-300"></i> Exibir Filtros';
+        }
+      });
 
       // Função para exibir mensagens de status
       function showMessage(elementId, message, type) {
         const messageBox = document.getElementById(elementId);
-        messageBox.textContent = message;
-        messageBox.className = `message-box ${type}`; // Adiciona classes de estilo dinamicamente
+        messageBox.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} mr-2"></i>${message}`;
+        messageBox.className = `message-box ${type}`;
         messageBox.classList.remove('hidden');
       }
 
@@ -557,22 +1193,22 @@
         }
       }
 
-      // Atualiza os controles de paginação (botões e texto)
+      // Atualiza os controles de paginação
       function updatePaginationControls() {
         document.getElementById('pageInfo').textContent = `Página ${currentPage} de ${totalPages}`;
         document.getElementById('prevPageBtn').disabled = currentPage === 1;
         document.getElementById('nextPageBtn').disabled = currentPage === totalPages || totalRecords === 0;
       }
 
-      // Funções para abrir e fechar o modal (reutilizado para adicionar/editar)
+      // Funções para abrir e fechar o modal
       function openRecordModal(mode, rowIndex = -1, rowData = null) {
         recordModal.classList.remove('hidden');
-        hideMessage('modalResponseMessage'); // Esconde mensagens anteriores
+        hideMessage('modalResponseMessage');
 
         if (mode === 'add') {
           recordFormModal.reset();
-          modalTitle.textContent = 'Adicionar Novo Registro';
-          modalSubmitBtn.textContent = 'Gravar Registro';
+          modalTitle.innerHTML = '<i class="fas fa-plus-circle mr-2"></i>Adicionar Novo Registro';
+          modalSubmitBtn.innerHTML = '<i class="fas fa-save mr-2"></i>Gravar Registro';
           recordRowIndex.value = '';
           modalNumPaejSajInput.value = '';
           modalNumPaejSajInput.placeholder = 'Selecione um Sistema para a máscara';
@@ -580,11 +1216,12 @@
           updateAssimetriaFieldState();
           populateAssuntoDropdown(modalAssuntoSelect, 'Selecione');
           populateSubAssuntoDropdown(modalSubAssuntoSelect, [], 'Selecione', true);
+          document.getElementById('modalEntrada').value = new Date().toISOString().split('T')[0];
         } else if (mode === 'edit' && rowData) {
-          modalTitle.textContent = 'Editar Registro';
-          modalSubmitBtn.textContent = 'Atualizar Registro';
+          modalTitle.innerHTML = '<i class="fas fa-edit mr-2"></i>Editar Registro';
+          modalSubmitBtn.innerHTML = '<i class="fas fa-save mr-2"></i>Atualizar Registro';
           recordRowIndex.value = rowIndex;
-          // Preencher o formulário com os dados da linha
+          
           formFields.forEach(field => {
             let inputElement = document.getElementById('modal' + field.charAt(0).toUpperCase() + field.slice(1));
             if (field === 'numPaejSaj') inputElement = document.getElementById('modalNumPaejSaj');
@@ -595,7 +1232,6 @@
                 if (value && typeof value === 'string' && value.match(/^[0-9]{4}-[0-9]{2}-[0-9]{2}T/)) {
                   inputElement.value = value.split('T')[0];
                 } else {
-                  // Se o valor é uma data do Apps Script (Date object), formatar para YYYY-MM-DD
                   if (value instanceof Date && !isNaN(value)) {
                     inputElement.value = value.toISOString().split('T')[0];
                   } else {
@@ -603,20 +1239,16 @@
                   }
                 }
               } else if (inputElement.tagName === 'SELECT') {
-                // Para selects, defina o valor diretamente
                 inputElement.value = value;
-                // Se for Assunto, dispare a atualização do Sub Assunto
                 if (field === 'assunto') {
                   populateAssuntoDropdown(modalAssuntoSelect, 'Selecione');
                   modalAssuntoSelect.value = value;
                   updateSubAssuntoDropdown(modalAssuntoSelect, modalSubAssuntoSelect);
                   modalSubAssuntoSelect.value = rowData[sheetColumnIndexes['subAssunto']];
                 }
-                // Se for Situação, dispare a atualização da Assimetria
                 if (field === 'situacao') {
                   updateAssimetriaFieldState();
                 }
-                // Se for Sistema, dispare a atualização da máscara do PAEJ SAJ
                 if (field === 'sistema') {
                   updatePaejMask();
                 }
@@ -625,20 +1257,19 @@
               }
             }
           });
-          // Se o sistema já estiver selecionado na edição, aplica a máscara
+          
           if (modalSistemaSelect.value) {
             updatePaejMask();
             applyMask(modalNumPaejSajInput, masks[modalSistemaSelect.value]);
           }
         }
-        recordModal.classList.remove('hidden');
       }
 
       function closeRecordModal() {
         recordModal.classList.add('hidden');
       }
 
-      // Lógica de Máscara de Entrada para Num. PAEJ S.A.J.
+      // Lógica de Máscara de Entrada
       const masks = {
         'PAE 3.0': '2025/00000000',
         'PAE 4.0': 'E-2025/00000000',
@@ -648,23 +1279,23 @@
       function applyMask(inputElement, mask) {
         if (!inputElement || !mask) return;
 
-        inputElement.placeholder = mask; // Exibe a máscara como placeholder
+        inputElement.placeholder = mask;
         let current = inputElement.value;
         let formatted = '';
         let maskCharIndex = 0;
         let valueCharIndex = 0;
 
         while (maskCharIndex < mask.length && valueCharIndex < current.length) {
-          if (mask[maskCharIndex] === '0') { // Caractere de preenchimento (número)
+          if (mask[maskCharIndex] === '0') {
             if (/\d/.test(current[valueCharIndex])) {
               formatted += current[valueCharIndex];
               valueCharIndex++;
             }
             maskCharIndex++;
-          } else { // Caractere literal da máscara
+          } else {
             formatted += mask[maskCharIndex];
             if (mask[maskCharIndex] === current[valueCharIndex]) {
-              valueCharIndex++; // Consome o caractere da entrada se corresponder à máscara
+              valueCharIndex++;
             }
             maskCharIndex++;
           }
@@ -687,24 +1318,24 @@
       function updateAssimetriaFieldState() {
         const situacaoValue = modalSituacaoSelect.value;
         if (situacaoValue === 'CONFORME') {
-          modalAssimetriaSelect.value = ''; // Limpa o valor
-          modalAssimetriaSelect.disabled = true; // Desabilita o campo
-          modalAssimetriaSelect.classList.add('bg-gray-200'); // Adiciona estilo visual de desabilitado
+          modalAssimetriaSelect.value = '';
+          modalAssimetriaSelect.disabled = true;
+          modalAssimetriaSelect.classList.add('opacity-50');
         } else {
-          modalAssimetriaSelect.disabled = false; // Habilita o campo
-          modalAssimetriaSelect.classList.remove('bg-gray-200'); // Remove estilo visual de desabilitado
+          modalAssimetriaSelect.disabled = false;
+          modalAssimetriaSelect.classList.remove('opacity-50');
         }
       }
 
       // Lógica de dependência entre Assunto e Sub Assunto
       function populateAssuntoDropdown(dropdownElement, defaultOptionText = 'Selecione') {
-        dropdownElement.innerHTML = ''; // Limpa opções existentes
+        dropdownElement.innerHTML = '';
         const defaultOption = document.createElement('option');
         defaultOption.value = '';
         defaultOption.textContent = defaultOptionText;
         dropdownElement.appendChild(defaultOption);
 
-        const assuntos = Object.keys(assuntoSubAssuntoMap).sort(); // Obtém e ordena os assuntos
+        const assuntos = Object.keys(assuntoSubAssuntoMap).sort();
         assuntos.forEach(assunto => {
           const option = document.createElement('option');
           option.value = assunto;
@@ -714,13 +1345,13 @@
       }
 
       function populateSubAssuntoDropdown(dropdownElement, subAssuntos, defaultOptionText = 'Selecione', disable = false) {
-        dropdownElement.innerHTML = ''; // Limpa opções existentes
+        dropdownElement.innerHTML = '';
         const defaultOption = document.createElement('option');
         defaultOption.value = '';
         defaultOption.textContent = defaultOptionText;
         dropdownElement.appendChild(defaultOption);
 
-        subAssuntos.sort().forEach(subAssunto => { // Adiciona e ordena sub assuntos
+        subAssuntos.sort().forEach(subAssunto => {
           const option = document.createElement('option');
           option.value = subAssunto;
           option.textContent = subAssunto;
@@ -728,7 +1359,7 @@
         });
 
         dropdownElement.disabled = disable;
-        dropdownElement.classList.toggle('bg-gray-200', disable);
+        dropdownElement.classList.toggle('opacity-50', disable);
       }
 
       function updateSubAssuntoDropdown(assuntoSelectElement, subAssuntoSelectElement) {
@@ -736,16 +1367,13 @@
         const subAssuntos = assuntoSubAssuntoMap[selectedAssunto] || [];
         
         if (selectedAssunto === '') {
-            populateSubAssuntoDropdown(subAssuntoSelectElement, [], 'Selecione', true); // Limpa e desabilita
+          populateSubAssuntoDropdown(subAssuntoSelectElement, [], 'Selecione', true);
         } else {
-            populateSubAssuntoDropdown(subAssuntoSelectElement, subAssuntos, 'Selecione', false); // Habilita
+          populateSubAssuntoDropdown(subAssuntoSelectElement, subAssuntos, 'Selecione', false);
         }
       }
 
-
-      // --- EVENT LISTENERS ---
-
-      // Sistema e Num. PAEJ S.A.J. (Modal)
+      // Event Listeners
       modalSistemaSelect.addEventListener('change', updatePaejMask);
       modalNumPaejSajInput.addEventListener('input', function() {
         const selectedSystem = modalSistemaSelect.value;
@@ -755,25 +1383,19 @@
         }
       });
 
-      // Situação e Assimetria (Modal)
       modalSituacaoSelect.addEventListener('change', updateAssimetriaFieldState);
-
-      // Assunto e Sub Assunto (Modal)
       modalAssuntoSelect.addEventListener('change', function() {
         updateSubAssuntoDropdown(modalAssuntoSelect, modalSubAssuntoSelect);
       });
-
-      // Assunto e Sub Assunto (Filtro)
       filterAssuntoSelect.addEventListener('change', function() {
         updateSubAssuntoDropdown(filterAssuntoSelect, filterSubAssuntoSelect);
       });
 
-
-      // Lida com o envio do formulário dentro do modal para gravar/atualizar dados
+      // Envio do formulário
       recordFormModal.addEventListener('submit', function(e) {
-        e.preventDefault(); // Impede o envio padrão do formulário
-        hideMessage('modalResponseMessage'); // Esconde mensagens anteriores
-        toggleSpinner('modalLoadingSpinner', true); // Mostra o spinner
+        e.preventDefault();
+        hideMessage('modalResponseMessage');
+        toggleSpinner('modalLoadingSpinner', true);
 
         const formData = new FormData(this);
         const data = {};
@@ -783,34 +1405,14 @@
 
         const rowIndexToEdit = recordRowIndex.value;
 
-        if (rowIndexToEdit) { // Modo de Edição
+        if (rowIndexToEdit) {
           google.script.run
             .withSuccessHandler(function(response) {
-              toggleSpinner('modalLoadingSpinner', false); // Esconde o spinner
+              toggleSpinner('modalLoadingSpinner', false);
               if (response.sucesso) {
                 showMessage('modalResponseMessage', response.mensagem, 'success');
                 setTimeout(() => {
                   closeRecordModal();
-                  lerDadosExistentes(); // Recarrega a tabela atualizada
-                }, 1500);
-              } else {
-                showMessage('modalResponseMessage', response.mensagem, 'error');
-              }
-            })
-            .withFailureHandler(function(error) {
-              toggleSpinner('modalLoadingSpinner', false); // Esconde o spinner
-              showSpecificError(error);
-            })
-            .atualizarDadosWeb(rowIndexToEdit, data);
-        } else { // Modo de Adição
-          google.script.run
-            .withSuccessHandler(function(response) {
-              toggleSpinner('modalLoadingSpinner', false); // Esconde o spinner
-              if (response.sucesso) {
-                showMessage('modalResponseMessage', response.mensagem, 'success');
-                setTimeout(() => {
-                  closeRecordModal();
-                  currentPage = 1; // Volta para a primeira página para ver o novo registro
                   lerDadosExistentes();
                 }, 1500);
               } else {
@@ -818,20 +1420,39 @@
               }
             })
             .withFailureHandler(function(error) {
-              toggleSpinner('modalLoadingSpinner', false); // Esconde o spinner
+              toggleSpinner('modalLoadingSpinner', false);
+              showSpecificError(error);
+            })
+            .atualizarDadosWeb(rowIndexToEdit, data);
+        } else {
+          google.script.run
+            .withSuccessHandler(function(response) {
+              toggleSpinner('modalLoadingSpinner', false);
+              if (response.sucesso) {
+                showMessage('modalResponseMessage', response.mensagem, 'success');
+                setTimeout(() => {
+                  closeRecordModal();
+                  currentPage = 1;
+                  lerDadosExistentes();
+                }, 1500);
+              } else {
+                showMessage('modalResponseMessage', response.mensagem, 'error');
+              }
+            })
+            .withFailureHandler(function(error) {
+              toggleSpinner('modalLoadingSpinner', false);
               showSpecificError(error);
             })
             .gravarDadosWeb(data);
         }
       });
 
-      // Lida com o clique no botão de atualizar dados
+      // Botões de controle
       document.getElementById('refreshDataBtn').addEventListener('click', function() {
         currentPage = 1;
         lerDadosExistentes();
       });
 
-      // Lida com o clique no botão de página anterior
       document.getElementById('prevPageBtn').addEventListener('click', function() {
         if (currentPage > 1) {
           currentPage--;
@@ -839,7 +1460,6 @@
         }
       });
 
-      // Lida com o clique no botão de próxima página
       document.getElementById('nextPageBtn').addEventListener('click', function() {
         if (currentPage < totalPages) {
           currentPage++;
@@ -847,82 +1467,70 @@
         }
       });
 
-      // Lida com o clique no botão Aplicar Filtros
       document.getElementById('applyFiltersBtn').addEventListener('click', function() {
         hideMessage('readMessage');
         toggleSpinner('filterSpinner', true);
 
         const filterForm = document.getElementById('filterForm');
         const formData = new FormData(filterForm);
-        currentFilters = {}; // Limpa filtros anteriores
+        currentFilters = {};
         for (let [key, value] of formData.entries()) {
-          if (value) { // Adiciona apenas filtros com valor
+          if (value) {
             currentFilters[key] = value;
           }
         }
-        // Adicionando filtros de saída por intervalo de datas
+        
         const saidaInicio = formData.get('saidaInicio');
         const saidaFim = formData.get('saidaFim');
         if (saidaInicio) currentFilters.saidaInicio = saidaInicio;
         if (saidaFim) currentFilters.saidaFim = saidaFim;
 
-        currentPage = 1; // Ao aplicar filtros, sempre volte para a primeira página
+        currentPage = 1;
         lerDadosExistentes();
       });
 
-      // Lida com o clique no botão Limpar Filtros
       document.getElementById('clearFiltersBtn').addEventListener('click', function() {
-        document.getElementById('filterForm').reset(); // Limpa os campos do formulário de filtro
-        // Reset dos dropdowns de Assunto/Sub Assunto no filtro
+        document.getElementById('filterForm').reset();
         populateAssuntoDropdown(filterAssuntoSelect, 'Todos');
         populateSubAssuntoDropdown(filterSubAssuntoSelect, [], 'Todos', true);
 
-        currentFilters = {}; // Limpa os filtros ativos
-        currentPage = 1; // Volta para a primeira página
+        currentFilters = {};
+        currentPage = 1;
         lerDadosExistentes();
       });
 
-      // Funções para abrir e fechar o modal
       openAddRecordModalBtn.addEventListener('click', function() {
-        openRecordModal('add'); // Abre o modal no modo de adição
+        openRecordModal('add');
       });
       closeModalBtn.addEventListener('click', closeRecordModal);
 
-      // Função para ler e exibir dados existentes na planilha com paginação e filtros
+      // Função para ler dados existentes
       function lerDadosExistentes() {
-        hideMessage('readMessage'); // Esconde mensagens anteriores
-        toggleSpinner('refreshSpinner', true); // Mostra o spinner de atualização
-        toggleSpinner('filterSpinner', true); // Mostra o spinner de filtro (se aplicável)
+        hideMessage('readMessage');
+        toggleSpinner('refreshSpinner', true);
+        toggleSpinner('filterSpinner', true);
 
         const dataTableBody = document.getElementById('dataTableBody');
-        // Colspan ajustado para 15 (14 colunas de dados + 1 de Ações)
-        dataTableBody.innerHTML = '<tr><td colspan="15" class="text-center py-4 text-gray-500">Carregando dados...</td></tr>'; // Mensagem de carregamento
+        dataTableBody.innerHTML = '<tr><td colspan="14" class="text-center py-8 text-gray-500"><i class="fas fa-spinner fa-spin text-2xl mb-2"></i><br>Carregando dados...</td></tr>';
 
-        // Chama a função lerTodosOsDadosWeb no Apps Script com parâmetros de paginação e filtros
         google.script.run
           .withSuccessHandler(function(response) {
-            toggleSpinner('refreshSpinner', false); // Esconde o spinner de atualização
-            toggleSpinner('filterSpinner', false); // Esconde o spinner de filtro
+            toggleSpinner('refreshSpinner', false);
+            toggleSpinner('filterSpinner', false);
 
-            console.log('Dados recebidos do Apps Script:', response.data);
-            console.log('Total de registros filtrados:', response.totalRecords);
-
-            currentTableData = response.data; // Armazena os dados da tabela atual para edição
+            currentTableData = response.data;
             totalRecords = response.totalRecords;
             totalPages = Math.ceil(totalRecords / pageSize);
             if (totalPages === 0) totalPages = 1;
 
-            // renderiza as linhas da tabela
             renderTableRows();
-
             updatePaginationControls();
           })
           .withFailureHandler(function(error) {
             toggleSpinner('refreshSpinner', false);
             toggleSpinner('filterSpinner', false);
             showSpecificError(error);
-            // Colspan ajustado para 15
-            dataTableBody.innerHTML = '<tr><td colspan="15" class="text-center py-4 text-red-500">Erro ao carregar dados.</td></tr>';
+            dataTableBody.innerHTML = '<tr><td colspan="14" class="text-center py-8 text-red-500"><i class="fas fa-exclamation-triangle text-2xl mb-2"></i><br>Erro ao carregar dados.</td></tr>';
             updatePaginationControls();
           })
           .lerTodosOsDadosWeb(currentPage, pageSize, currentFilters);
@@ -932,7 +1540,6 @@
         google.script.run
           .withSuccessHandler(function(map) {
             assuntoSubAssuntoMap = map;
-            console.log('Mapeamento Assunto/Sub Assunto carregado:', assuntoSubAssuntoMap);
             populateAssuntoDropdown(modalAssuntoSelect, 'Selecione');
             populateAssuntoDropdown(filterAssuntoSelect, 'Todos');
             populateSubAssuntoDropdown(modalSubAssuntoSelect, [], 'Selecione', true);
@@ -944,7 +1551,6 @@
           .getAssuntoSubAssuntoMap();
       }
 
-      // Função para exibir o e-mail do usuário
       function displayUserEmail() {
         google.script.run
           .withSuccessHandler(function(email) {
@@ -957,15 +1563,10 @@
           .getUserEmail();
       }
 
-      // 1. Adicionar atributos de ordenação aos <th> da tabela:
-      // Exemplo: <th class="sortable" data-field="status">Status</th>
-      // ... para todos os cabeçalhos ...
-
-      // 3. Adicionar variáveis de controle de ordenação:
+      // Variáveis de controle de ordenação
       let currentSortField = null;
       let currentSortDirection = 'asc';
 
-      // 4. Função para ordenar os dados:
       function sortTableData(field) {
         if (currentSortField === field) {
           currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
@@ -973,49 +1574,75 @@
           currentSortField = field;
           currentSortDirection = 'asc';
         }
+        
         currentTableData.sort((a, b) => {
           const idx = sheetColumnIndexes[field];
           let valA = a[idx];
           let valB = b[idx];
-          // Tenta converter para data se for campo de data
+          
           if (field === 'entrada' || field === 'saida') {
-            // Converte para formato YYYY-MM-DD para comparação correta de datas
             valA = valA.split('/').reverse().join('-');
             valB = valB.split('/').reverse().join('-');
           }
+          
           if (valA < valB) return currentSortDirection === 'asc' ? -1 : 1;
           if (valA > valB) return currentSortDirection === 'asc' ? 1 : -1;
           return 0;
         });
+        
         renderTableRows();
         updateSortIndicators();
       }
 
-      // 5. Função para renderizar as linhas da tabela (extraída de lerDadosExistentes):
       function renderTableRows() {
         const dataTableBody = document.getElementById('dataTableBody');
         dataTableBody.innerHTML = '';
+        
         if (currentTableData && currentTableData.length > 0) {
           currentTableData.forEach(function(linha, index) {
             const row = dataTableBody.insertRow();
             const actualSheetRowIndex = ((currentPage - 1) * pageSize) + index + 2;
-            linha.forEach(function(celula) {
+            
+            linha.forEach(function(celula, cellIndex) {
               const cell = row.insertCell();
-              cell.textContent = celula;
+              
+              // Aplicar badges de status para a coluna Situação
+              if (cellIndex === sheetColumnIndexes['situacao']) {
+                const badge = document.createElement('span');
+                badge.textContent = celula;
+                badge.className = 'status-badge';
+                
+                if (celula.toLowerCase().includes('conforme') && !celula.toLowerCase().includes('parcial')) {
+                  badge.classList.add('status-conforme');
+                } else if (celula.toLowerCase().includes('parcial')) {
+                  badge.classList.add('status-parcial');
+                } else {
+                  badge.classList.add('status-inconforme');
+                }
+                
+                cell.appendChild(badge);
+              } else {
+                cell.textContent = celula;
+              }
             });
-            // Adiciona a célula de ações com os botões Editar e Deletar
+            
+            // Célula de ações
             const actionCell = row.insertCell();
+            actionCell.className = 'flex gap-2 justify-center';
+            
             const editButton = document.createElement('button');
-            editButton.textContent = 'Editar';
-            editButton.classList.add('btn', 'btn-secondary', 'text-sm', 'px-3', 'py-1', 'mr-2');
+            editButton.innerHTML = '<i class="fas fa-edit"></i>';
+            editButton.className = 'btn btn-secondary text-sm px-3 py-1';
+            editButton.title = 'Editar registro';
             editButton.onclick = function() {
               openRecordModal('edit', actualSheetRowIndex, linha);
             };
             actionCell.appendChild(editButton);
-            // Botão Deletar
+            
             const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Deletar';
-            deleteButton.classList.add('btn', 'btn-danger', 'text-sm', 'px-3', 'py-1');
+            deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
+            deleteButton.className = 'btn btn-danger text-sm px-3 py-1';
+            deleteButton.title = 'Deletar registro';
             deleteButton.onclick = function() {
               if (confirm('Tem certeza que deseja deletar este registro?')) {
                 google.script.run
@@ -1036,13 +1663,16 @@
             actionCell.appendChild(deleteButton);
           });
         } else {
-          dataTableBody.innerHTML = '<tr><td colspan="15" class="text-center py-4 text-gray-500">Nenhum dado encontrado na página atual ou com os filtros aplicados.</td></tr>';
+          const row = dataTableBody.insertRow();
+          const cell = row.insertCell();
+          cell.colSpan = 14;
+          cell.className = 'text-center py-8 text-gray-500';
+          cell.innerHTML = '<i class="fas fa-inbox text-3xl mb-2"></i><br>Nenhum dado encontrado.';
         }
       }
 
-      // 6. Atualizar indicadores visuais de ordenação:
       function updateSortIndicators() {
-        document.querySelectorAll('th.sortable').forEach(th => {
+        document.querySelectorAll('.tabela-dados th.sortable').forEach(th => {
           th.classList.remove('sorted-asc', 'sorted-desc');
           if (th.dataset.field === currentSortField) {
             th.classList.add(currentSortDirection === 'asc' ? 'sorted-asc' : 'sorted-desc');
@@ -1050,43 +1680,24 @@
         });
       }
 
-      document.addEventListener('DOMContentLoaded', function() {
-        lerDadosExistentes();
-        loadAssuntoSubAssuntoMap();
-        displayUserEmail(); // Chama a função para exibir o e-mail do usuário
-
-        // 7. Adicionar listeners aos cabeçalhos após DOMContentLoaded:
-        document.querySelectorAll('th.sortable').forEach(th => {
-          th.addEventListener('click', function() {
-            sortTableData(th.dataset.field);
-          });
+      // Event listeners para ordenação
+      document.querySelectorAll('.tabela-dados th.sortable').forEach(th => {
+        th.addEventListener('click', function() {
+          sortTableData(this.dataset.field);
         });
       });
 
-      // 1. Função utilitária para exibir mensagens de erro específicas
       function showSpecificError(error) {
-        let msg = 'Erro desconhecido.';
-        if (typeof error === 'string') {
-          msg = error;
-        } else if (error && error.message) {
-          msg = error.message;
-        }
-        if (msg.includes('Aba "Dados" não encontrada')) {
-          showMessage('readMessage', 'Erro: A aba "Dados" não foi encontrada na planilha. Verifique se a aba existe ou peça ao administrador para criá-la.', 'error');
-        } else if (msg.includes('Aba "Config Usuarios" não encontrada')) {
-          showMessage('readMessage', 'Erro: A aba "Config Usuarios" não foi encontrada na planilha. Usuários não poderão acessar o sistema até que ela seja criada.', 'error');
-        } else if (msg.includes('Aba "Config Assuntos" não encontrada')) {
-          showMessage('readMessage', 'Erro: A aba "Config Assuntos" não foi encontrada na planilha. O cadastro de assuntos e subassuntos ficará indisponível.', 'error');
-        } else if (msg.includes('Acesso negado')) {
-          showMessage('readMessage', 'Acesso negado: seu e-mail não está autorizado a acessar este sistema.', 'error');
-        } else if (msg.includes('Erro ao gravar dados')) {
-          showMessage('modalResponseMessage', msg, 'error');
-        } else if (msg.includes('Erro ao atualizar dados')) {
-          showMessage('modalResponseMessage', msg, 'error');
-        } else {
-          showMessage('readMessage', 'Erro: ' + msg, 'error');
-        }
+        console.error('Erro:', error);
+        showMessage('readMessage', 'Erro: ' + error.toString(), 'error');
       }
+
+      // Inicialização
+      document.addEventListener('DOMContentLoaded', function() {
+        displayUserEmail();
+        loadAssuntoSubAssuntoMap();
+        lerDadosExistentes();
+      });
     </script>
   </body>
 </html>

@@ -94,12 +94,12 @@ function gravarDadosWeb(dados) {
   try {
     var planilha = SpreadsheetApp.getActiveSpreadsheet();
     Logger.log('Tentando obter a aba com o nome: Dados para gravação.');
-    var aba = planilha.getSheetByName('DadosTeste');
+    var aba = planilha.getSheetByName('Dados');
 
     if (aba == null) {
       Logger.log('A aba "Dados" não foi encontrada. Criando uma nova aba com esse nome.');
       // Se a aba não existe, cria uma nova
-      aba = planilha.insertSheet('DadosTeste');
+      aba = planilha.insertSheet('Dados');
       // Adiciona cabeçalhos se for uma nova aba (IMPORTANTE: Mantenha a ordem dos campos aqui)
       // Ordem final dos campos
       aba.appendRow([
@@ -151,7 +151,7 @@ function atualizarDadosWeb(rowIndex, dados) {
   try {
     var planilha = SpreadsheetApp.getActiveSpreadsheet();
     Logger.log('Tentando obter a aba com o nome: Dados para atualização.');
-    var aba = planilha.getSheetByName('DadosTeste');
+    var aba = planilha.getSheetByName('Dados');
 
     if (aba == null) {
       Logger.log('A aba "Dados" não foi encontrada para atualização.');
@@ -224,7 +224,7 @@ function lerTodosOsDadosWeb(pageNumber, pageSize, filters) {
   try {
     var planilha = SpreadsheetApp.getActiveSpreadsheet();
     Logger.log('Tentando obter a aba com o nome: Dados para leitura paginada e filtrada.');
-    var aba = planilha.getSheetByName('DadosTeste');
+    var aba = planilha.getSheetByName('Dados');
 
     if (aba == null) {
       Logger.log('A aba "Dados" não foi encontrada ao ler dados. Retornando array vazio e 0 registros.');
@@ -367,7 +367,7 @@ function lerTodosOsDadosWebSemPaginacao() {
   try {
     var planilha = SpreadsheetApp.getActiveSpreadsheet();
     Logger.log('Tentando obter a aba com o nome: Dados para dashboard (sem paginação/filtros).');
-    var aba = planilha.getSheetByName('DadosTeste');
+    var aba = planilha.getSheetByName('Dados');
 
     if (aba == null) {
       Logger.log('A aba "Dados" não foi encontrada. Retornando 0 para todos os totais do dashboard.');
@@ -517,7 +517,7 @@ function getAssuntoSubAssuntoMap() {
 function deletarRegistroWeb(rowIndex) {
   try {
     var planilha = SpreadsheetApp.getActiveSpreadsheet();
-    var aba = planilha.getSheetByName('DadosTeste');
+    var aba = planilha.getSheetByName('Dados');
     if (!aba) {
       return { sucesso: false, mensagem: 'Aba "Dados" não encontrada.' };
     }
